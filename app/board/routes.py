@@ -4,10 +4,17 @@ from ..database import *
 
 board_bp = Blueprint('board', __name__, url_prefix='/board')
 
-def paginate(posts, page, perPage):
-    start = (page - 1) * perPage
-    end = start + perPage
-    return posts[start:end]
+
+@board_bp.route('/index')
+def index():
+    return render_template('board/index.html')
+
+
+@board_bp.route('/create')
+def create():
+    return render_template('board/create.html')
+
+  
 
 @board_bp.route('/index')
 def index():
@@ -54,12 +61,6 @@ def index():
 #     return render_template('board/index.html', posts=posts_results, search_count=search_count, total_count=total_count)
 
 
-@board_bp.route('/write', methods=['POST'])
-def write():
-    # 글 작성 기능 추가할 것
-    return render_template('board/index.html')
-
-
 @board_bp.route('/test_data', methods=['POST'])
 def test_data():
     print('test')
@@ -80,3 +81,4 @@ def test_data():
         post.updated_at = datetime.date(post.updated_at)
 
     return render_template('board/index.html', posts=posts_results)
+

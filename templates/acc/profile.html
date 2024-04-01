@@ -1,0 +1,132 @@
+{% extends "layout.html" %}
+{% block title %}PROFILE PAGE{% endblock %}
+{% block head %}
+<style>
+    #custom_title {
+        flex: 1;
+        width: 100%;
+        height: 50px;
+        font-size: 24px;
+        font-weight: 700;
+        resize: none;
+        color: #222222;
+        border: none;
+        border-bottom: 1px solid #D9D9D9;
+        outline: none;
+        padding-left: 12px;
+    }
+
+    .custom_row {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        border-bottom: 1px solid #D9D9D9;
+        padding: 16px;
+    }
+
+    .custom_row_key {
+        width: 100px;
+        margin-right: 20px;
+        color: #5C5C5C;
+    }
+
+    .custom_row_value {
+        color: #222222;
+    }
+
+    button.button_1 {
+        border: 0;
+        outline: none;
+        font-size: 16px;
+        background: #FAC17E;
+        color: white;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        padding-left: 16px;
+        padding-right: 16px;
+        cursor: pointer;
+        border-radius: 8px;
+    }
+
+    .button_area {
+        display: flex;
+        justify-content: right;
+        align-items: center;
+    }
+
+    .margin_bottom {
+        margin-bottom: 20px;
+    }
+
+
+    .addImage {
+        width: 120px;
+        height: 120px;
+        background-color: #D9D9D9;
+        border-radius: 20px 20px / 20px 20px;
+        overflow: hidden;
+        margin: 0px 10px 10px 0px;
+    }
+
+    .horizontal {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+<script>
+    function loadFile(input) {
+        let file = input.files[0]; // 선택파일 가져오기
+
+        let newImage = document.createElement("img"); //새 이미지 태그 생성
+
+        //이미지 source 가져오기
+        newImage.src = URL.createObjectURL(file);
+        newImage.style.width = "100%"; //div에 꽉차게 넣으려고
+        newImage.style.height = "100%";
+        newImage.style.objectFit = "cover"; // div에 넘치지 않고 들어가게
+
+        //이미지를 image-show div에 추가
+        let container = document.getElementById('image-show');
+        container.appendChild(newImage);
+    }
+</script>
+{% endblock %}
+{% block content %}
+<h3 id="custom_title">
+    내 정보
+</h3>
+<div class="margin_bottom">
+    <div class="custom_row">
+        <div class="custom_row_key">프로필 사진</div>
+        <div class="custom_row_value">
+            <form class="horizontal" method="post" enctype="multipart/form-data"> <!-- 이미지 파일 데이터에 알맞는 enctype 설정 -->
+                <div class="addImage" id="image-show"> <!-- 이미지 띄울 공간 -->
+                </div>
+                <input type="file" accept="image/*" onchange="loadFile(this)">
+            </form>
+        </div>
+    </div>
+    <div class="custom_row">
+        <div class="custom_row_key">소셜 계정</div>
+        <div class="custom_row_value">구글</div>
+    </div>
+    <div class="custom_row">
+        <div class="custom_row_key">아이디</div>
+        <div class="custom_row_value">abcdefg</div>
+    </div>
+    <div class="custom_row">
+        <div class="custom_row_key">비밀번호</div>
+        <div class="custom_row_value">password1293</div>
+    </div>
+    <div class="custom_row">
+        <div class="custom_row_key">계정 생성일</div>
+        <div class="custom_row_value">YYYY.MM.DD</div>
+    </div>
+</div>
+
+<div class="button_area">
+    <button type="submit" class="button_1">게시판으로 돌아가기</button>
+</div>
+
+{% endblock %}

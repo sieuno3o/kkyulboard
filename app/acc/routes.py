@@ -5,10 +5,17 @@ from flask_login import login_user, logout_user
 
 acc_bp = Blueprint('acc', __name__, url_prefix='/acc')
 
+
 @acc_bp.route('/index')
 def index():
     return render_template('acc/index.html')
 
+  
+@acc_bp.route('/profile')
+def profile():
+    return render_template('acc/profile.html')
+
+  
 @acc_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
@@ -35,3 +42,4 @@ def signup():
 def logout():
     logout_user()
     return redirect(url_for('acc.index'))
+
