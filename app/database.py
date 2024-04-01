@@ -35,4 +35,4 @@ class Post(db.Model):
     # user = relationship('User', back_populates='posts', lazy='select')
 
     def __repr__(self):
-        return f'post'
+        return f"[{self.user}] {self.title}"

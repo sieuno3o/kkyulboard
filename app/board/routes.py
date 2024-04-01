@@ -1,43 +1,57 @@
-import flask
-import kkyulboard.app.database
 from datetime import datetime
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request, redirect, url_for
 from ..database import *
 
 board_bp = Blueprint('board', __name__, url_prefix='/board')
 
+def paginate(posts, page, perPage):
+    start = (page - 1) * perPage
+    end = start + perPage
+    return posts[start:end]
 
 @board_bp.route('/index')
 def index():
-    posts_results = Post.query.order_by(Post.id.desc()).limit(20).all()
-    for post in posts_results:
-        post.updated_at = datetime.date(post.updated_at)
+    page = request.args.get('page', 1, type=int)
+    sort = request.args.get('sort', None, type=str)
 
-    search_count = len(posts_results)
-    total_count = Post.query.count()
-    return render_template('board/index.html', posts=posts_results, search_count=search_count, total_count=total_count)
+    perPage = 20
+
+    # 사용자의 불순한 값 대비 코드
+    try:
+        if sort == 'asc':
+            pag = Post.query.order_by(Post.created_at.asc()).paginate(page=page, per_page=perPage)
+        elif sort == 'desc':
+            pag = Post.query.order_by(Post.created_at.desc()).paginate(page=page, per_page=perPage)
+        else:
+            pag = Post.query.paginate(page=page, per_page=perPage)
+    except:
+        return redirect(url_for('board.index'))
+
+    stIdx = (pag.page - 1) * pag.per_page + 1
+    postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
+
+    return render_template('board/index.html', pag=pag, postsCount=postsCount, stIdx=stIdx, sort=sort)
+
+# @board_bp.route('/recent', methods=['GET'])
+# def recent():
+#     posts_results = Post.query.order_by(Post.id.desc()).limit(20).all()
+#     for post in posts_results:
+#         post.updated_at = datetime.date(post.updated_at)
+
+#     search_count = len(posts_results)
+#     total_count = Post.query.count()
+#     return render_template('board/index.html', posts=posts_results, search_count=search_count, total_count=total_count)
 
 
-@board_bp.route('/recent', methods=['GET'])
-def recent():
-    posts_results = Post.query.order_by(Post.id.desc()).limit(20).all()
-    for post in posts_results:
-        post.updated_at = datetime.date(post.updated_at)
+# @board_bp.route('/oldest', methods=['GET'])
+# def oldest():
+#     posts_results = Post.query.order_by(Post.id.asc()).limit(20).all()
+#     for post in posts_results:
+#         post.updated_at = datetime.date(post.updated_at)
 
-    search_count = len(posts_results)
-    total_count = Post.query.count()
-    return render_template('board/index.html', posts=posts_results, search_count=search_count, total_count=total_count)
-
-
-@board_bp.route('/oldest', methods=['GET'])
-def oldest():
-    posts_results = Post.query.order_by(Post.id.asc()).limit(20).all()
-    for post in posts_results:
-        post.updated_at = datetime.date(post.updated_at)
-
-    search_count = len(posts_results)
-    total_count = Post.query.count()
-    return render_template('board/index.html', posts=posts_results, search_count=search_count, total_count=total_count)
+#     search_count = len(posts_results)
+#     total_count = Post.query.count()
+#     return render_template('board/index.html', posts=posts_results, search_count=search_count, total_count=total_count)
 
 
 @board_bp.route('/write', methods=['POST'])

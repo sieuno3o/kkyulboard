@@ -26,6 +26,11 @@ def login():
             flash('아이디나 패스워드를 확인해주세요!', 'danger')
     return render_template('acc/login.html')
 
+@acc_bp.route('/signup')
+def signup():
+    return render_template('acc/signup.html')
+
+
 @acc_bp.route("/logout")
 def logout():
     logout_user()
