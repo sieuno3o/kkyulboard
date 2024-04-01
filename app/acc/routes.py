@@ -21,9 +21,9 @@ def login():
                 login_user(user)
                 return redirect(url_for('acc.index'))
             else:
-                flash('아이디나 패스워드를 확인해주세요!', 'error')
+                flash('아이디나 패스워드를 확인해주세요!', 'danger')
         else:
-            flash('아이디나 패스워드를 확인해주세요!', 'error')
+            flash('아이디나 패스워드를 확인해주세요!', 'danger')
     return render_template('acc/login.html')
 
 @acc_bp.route("/logout")
