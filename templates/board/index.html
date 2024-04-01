@@ -4,5 +4,74 @@
 
 {% endblock %}
 {% block content %}
-    hello board
+<div class="container">
+    {{context}}
+    <div>
+        <div class="row">
+            <div class="col">
+                <h3>조회 결과 {{ postsCount }} 건/ 총 {{ pag.total }}건</h3>
+            </div>
+            <div class="col justify-content-end d-flex">
+
+                <a href="{{ url_for('board.index', page=pag.page, sort='asc') }}" class="btn btn-primary mb-2 mx-2">오름차순 정렬</a>
+                <a href="{{ url_for('board.index', page=pag.page, sort='desc') }}" class="btn btn-primary mb-2 mx-2">내림차순 정렬</a>
+                <a href="{{ url_for('board.write') }}" class="btn btn-primary mb-2 mx-2">글작성</a>
+
+            
+                <form class="form-inline" action="#" method="POST">
+                    <button type="submit" class="btn btn-primary mb-2 mx-2">테스트 데이터 추가</button>
+                </form>
+
+            </div>
+        </div>
+
+        <table class="table postTable">
+            <thead>
+                <tr>
+                    <th class="postNum">게시글 번호</th>
+                    <th class="postTitle">제목</th>
+                    <th class="postWriter">작성자</th>
+                    <th class="postDate">작성일</th>
+                    <th class="postHit">조회수</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in pag.items %}
+                <tr>
+                    <td style="text-align: center;">{{ stIdx + loop.index0 }}</td>
+                    <td><a href="#">{{ post.title }}</a></td>
+                    <td style="text-align: center;">{{ post.user.username }}</td>
+                    <td style="text-align: center;">{{ post.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                    <td style="text-align: center;">{{ post.click_count }}</td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+
+
+
+    <!-- Pagination Links -->
+    {% if pag.has_prev %}
+        <a href="{{ url_for('board.index', page=pag.prev_num, sort=sort) }}">Previous</a>
+    {% endif %}
+
+    {% for page_num in pag.iter_pages() %}
+        {% if page_num %}
+            {% if page_num != pag.page %}
+                <a href="{{ url_for('board.index', page=page_num, sort=sort) }}">{{ page_num }}</a>
+            {% else %}
+                <a>{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+            ...
+        {% endif %}
+    {% endfor %}
+
+    {% if pag.has_next %}
+        <a href="{{ url_for('board.index', page=pag.next_num, sort=sort) }}">Next</a>
+    {% endif %}
+</div> <!-- /container -->
 {% endblock %}
+
