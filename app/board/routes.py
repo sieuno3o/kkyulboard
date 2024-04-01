@@ -8,6 +8,6 @@ def index():
     return render_template('board/index.html')
 
 
-@board_bp.route('/create_post')
-def create_post():
-    return render_template('board/create_post.html')
+@board_bp.route('/create')
+def create():
+    return render_template('board/create.html')

@@ -8,6 +8,6 @@ def index():
     return render_template('acc/index.html')
 
 
-@acc_bp.route('/my_info')
-def my_info():
-    return render_template('acc/my_info.html')
+@acc_bp.route('/profile')
+def profile():
+    return render_template('acc/profile.html')
