@@ -9,26 +9,42 @@ board_bp = Blueprint('board', __name__, url_prefix='/board')
 
 @board_bp.route('/index')
 def index():
-    posts_results = Post.query.all()
+    posts_results = Post.query.order_by(Post.id.desc()).limit(20).all()
     for post in posts_results:
         post.updated_at = datetime.date(post.updated_at)
-    return render_template('board/index.html', posts=posts_results)
+
+    search_count = len(posts_results)
+    total_count = Post.query.count()
+    return render_template('board/index.html', posts=posts_results, search_count=search_count, total_count=total_count)
 
 
 @board_bp.route('/recent', methods=['GET'])
 def recent():
-    posts_results = Post.query.all()
-    return render_template('board/index.html', posts=posts_results)
+    posts_results = Post.query.order_by(Post.id.desc()).limit(20).all()
+    for post in posts_results:
+        post.updated_at = datetime.date(post.updated_at)
+
+    search_count = len(posts_results)
+    total_count = Post.query.count()
+    return render_template('board/index.html', posts=posts_results, search_count=search_count, total_count=total_count)
 
 
 @board_bp.route('/oldest', methods=['GET'])
 def oldest():
-    posts_results = Post.query.all()
-    return render_template('board/index.html', posts=posts_results)
+    posts_results = Post.query.order_by(Post.id.asc()).limit(20).all()
+    for post in posts_results:
+        post.updated_at = datetime.date(post.updated_at)
+
+    search_count = len(posts_results)
+    total_count = Post.query.count()
+    return render_template('board/index.html', posts=posts_results, search_count=search_count, total_count=total_count)
+
 
 @board_bp.route('/write', methods=['POST'])
 def write():
+    # 글 작성 기능 추가할 것
     return render_template('board/index.html')
+
 
 @board_bp.route('/test_data', methods=['POST'])
 def test_data():
@@ -45,6 +61,8 @@ def test_data():
     db.session.add(post)
     db.session.commit()
 
-    posts_results = Post.query.all()
+    posts_results = Post.query.order_by(Post.id.desc()).limit(20).all()
+    for post in posts_results:
+        post.updated_at = datetime.date(post.updated_at)
 
     return render_template('board/index.html', posts=posts_results)
