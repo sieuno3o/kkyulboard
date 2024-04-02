@@ -66,4 +66,8 @@
     transition: opacity 1s ease;
 }
 
+a{
+    text-decoration: none;
+}
+
 /*# sourceMappingURL=bootstrap.min.css.map */

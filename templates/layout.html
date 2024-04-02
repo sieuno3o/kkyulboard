@@ -20,16 +20,16 @@
     
     <nav id="Nav">
         <div class="navContainer">
-            <div class="navLogo">🍊 뀰보드</div>
+            <a class="navLogo" href="{{ url_for('board.index') }}">🍊 뀰보드</a>
             <div>
                 <!-- logined user -->
                 {% if current_user.is_authenticated %}
-                    <a href="#" class="btn navBtn">내 정보</a>
+                    <a href="{{ url_for('acc.profile') }}" class="btn navBtn">내 정보</a>
                     <a href="{{ url_for('acc.logout') }}" class="btn navBtn">로그아웃</a>
                 <!-- anonymous user -->
                 {% else %}
                     <a href="{{ url_for('acc.login') }}" class="btn navBtn">로그인</a>
-                    <a href="#" class="btn navBtn">회원가입</a>
+                    <a href="{{ url_for('acc.signup') }}" class="btn navBtn">회원가입</a>
                 {% endif %}
             </div>
         </div>
