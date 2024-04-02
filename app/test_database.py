@@ -69,8 +69,7 @@ class TestDomain(unittest.TestCase):
 
         self.assertEqual(2, len(posts))
 
-
-    def test_comments(self):
+    def test_comments_save_find_delete(self):
         users = [
             User(username='user1', password='1111', email='email1', grade='', userpic=''),
             User(username='user2', password='1111', email='email2', grade='', userpic='')
@@ -115,8 +114,30 @@ class TestDomain(unittest.TestCase):
         comments = self.commentRepo.findAll()
         self.assertEqual(0, len(comments))
 
+    def test_comments_update(self):
+        user = User(username='user1', password='1111', email='email1', grade='', userpic='')
+        self.userRepo.save(user)
+        user = self.userRepo.findFirst()
+        post = Post(title='post1', body='body1', user_id=user.user_id, created_at=datetime.now(),
+                    updated_at=datetime.now())
+        self.postRepo.save(post)
+        post = self.postRepo.findFirst()
 
+        comment1 = Comment(comments='comment1', user_id=user.user_id, post_id=post.post_id,
+                           created_at=datetime.now(), updated_at=datetime.now())
+        comment2 = Comment(comments='comment2', user_id=user.user_id, post_id=post.post_id,
+                           created_at=datetime.now(), updated_at=datetime.now())
 
+        self.commentRepo.saveAll([comment1, comment2])
+        comments = self.commentRepo.findAll()
+
+        self.commentRepo.updateComments(comments[0].comment_id, 'new_comment1')
+        self.commentRepo.updateComments(comments[1].comment_id, 'new_comment2')
+
+        comments = self.commentRepo.findAll()
+
+        self.assertEqual('new_comment1', comments[0].comments)
+        self.assertEqual('new_comment2', comments[1].comments)
 
 
 if __name__ == '__main__':
