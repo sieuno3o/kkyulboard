@@ -83,3 +83,10 @@ class CommentRepository:
             if comment:
                 db.session.delete(comment)
                 db.session.commit()
+
+    def updateComments(self, commentId: int, comments: str):
+        with self.app.app_context():
+            comment = Comment.query.filter(Comment.comment_id == commentId).first()
+            if comment:
+                comment.comments = comments
+                db.session.commit()
