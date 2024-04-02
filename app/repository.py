@@ -39,25 +39,32 @@ class PostRepository:
             db.session.add_all(posts)
             db.session.commit()
 
-    def findAll(self):
+    def findAll(self) -> list[Post]:
         with self.app.app_context():
             return Post.query.all()
 
-    def findFirst(self):
+    def findFirst(self) -> Post:
         with self.app.app_context():
             return Post.query.first()
+
+    def delete(self, postId: int):
+        with self.app.app_context():
+            comment = Post.query.filter(Post.post_id == postId).first()
+            if comment:
+                db.session.delete(comment)
+                db.session.commit()
 
 
 class CommentRepository:
     def __init__(self, app):
         self.app = app
 
-    def save(self, comment):
+    def save(self, comment: Comment):
         with self.app.app_context():
             db.session.add(comment)
             db.session.commit()
 
-    def saveAll(self, comments: list):
+    def saveAll(self, comments: list[Comment]):
         with self.app.app_context():
             db.session.add_all(comments)
             db.session.commit()
@@ -66,6 +73,13 @@ class CommentRepository:
         with self.app.app_context():
             return Comment.query.all()
 
-    def findFirst(self):
+    def findFirst(self) -> Comment:
         with self.app.app_context():
             return Comment.query.first()
+
+    def delete(self, commentId: int):
+        with self.app.app_context():
+            comment = Comment.query.filter(Comment.comment_id == commentId).first()
+            if comment:
+                db.session.delete(comment)
+                db.session.commit()

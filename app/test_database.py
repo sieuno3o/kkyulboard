@@ -64,6 +64,12 @@ class TestDomain(unittest.TestCase):
         self.assertEqual(2, len(users[0].posts))
         self.assertEqual(1, len(users[1].posts))
 
+        self.postRepo.delete(posts[0].post_id)
+        posts = self.postRepo.findAll()
+
+        self.assertEqual(2, len(posts))
+
+
     def test_comments(self):
         users = [
             User(username='user1', password='1111', email='email1', grade='', userpic=''),
@@ -100,6 +106,17 @@ class TestDomain(unittest.TestCase):
         self.assertEqual('post1', comments[1].post.title)
         self.assertEqual('post1', comments[2].post.title)
         self.assertEqual('post1', comments[3].post.title)
+
+        self.commentRepo.delete(comments[0].comment_id)
+        comments = self.commentRepo.findAll()
+        self.assertEqual(3, len(comments))
+
+        self.postRepo.delete(post.post_id)
+        comments = self.commentRepo.findAll()
+        self.assertEqual(0, len(comments))
+
+
+
 
 
 if __name__ == '__main__':

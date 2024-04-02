@@ -16,8 +16,6 @@ class User(UserMixin, db.Model):
     posts = relationship('Post', back_populates='user', lazy='joined')
     comments = relationship('Comment', back_populates='user', lazy='joined')
 
-    # posts = relationship('Post', back_populates='user', lazy='select')
-
     def __repr__(self):
         return f"{self.username} <{self.email}>"
 
@@ -35,9 +33,7 @@ class Post(db.Model):
     like_count = db.Column(db.Integer, nullable=True)
     secret_mode = db.Column(db.Boolean, nullable=True)
     user = relationship('User', back_populates='posts', lazy='joined')
-    comments = relationship('Comment', back_populates='post', lazy='joined')
-
-    # user = relationship('User', back_populates='posts', lazy='select')
+    comments = relationship('Comment', back_populates='post', lazy='joined', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"[{self.user}] {self.title}"
