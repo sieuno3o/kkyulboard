@@ -28,7 +28,7 @@
                     </div>
 
                     {% if isLogin %}
-                        <a href="{{ url_for('board.create') }}" class="btn btn-theme-color mb-2 mx-2">글작성</a>
+                        <a href="{{ url_for('board.createPost') }}" class="btn btn-theme-color mb-2 mx-2">글작성</a>
                     {% endif %}
 
                     <form class="form-inline" action="{{ url_for('board.test_data') }}" method="POST">
