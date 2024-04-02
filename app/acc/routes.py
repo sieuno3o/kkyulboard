@@ -10,12 +10,10 @@ acc_bp = Blueprint('acc', __name__, url_prefix='/acc')
 def index():
     return render_template('acc/index.html')
 
-  
 @acc_bp.route('/profile')
 def profile():
     return render_template('acc/profile.html')
 
-  
 @acc_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == "POST":

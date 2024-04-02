@@ -4,18 +4,6 @@ from ..database import *
 
 board_bp = Blueprint('board', __name__, url_prefix='/board')
 
-
-@board_bp.route('/index')
-def index():
-    return render_template('board/index.html')
-
-
-@board_bp.route('/create')
-def create():
-    return render_template('board/create.html')
-
-  
-
 @board_bp.route('/index')
 def index():
     page = request.args.get('page', 1, type=int)
@@ -38,6 +26,12 @@ def index():
     postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
 
     return render_template('board/index.html', pag=pag, postsCount=postsCount, stIdx=stIdx, sort=sort)
+
+@board_bp.route('/create')
+def create():
+    return render_template('board/create.html')
+
+
 
 # @board_bp.route('/recent', methods=['GET'])
 # def recent():
