@@ -10,69 +10,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
     <style>
-        .table thead th {
-            text-align: center;
-            background-color: #FAC17E;
-        }
-        .table th:nth-child(1) {
-            width: 10%;
-        }
-
-        .table th:nth-child(2) {
-            width: 50%;
-        }
-
-        .table th:nth-child(3) {
-            width: 10%;
-        }
-
-        .table th:nth-child(4) {
-            width: 10%;
-        }
-        .table th:nth-child(5) {
-            width: 10%;
-        }
-
-        #Nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: #FAC17E;
-            padding-left: 16px;
-            padding-right: 16px;
-            padding-top: 20px;
-            padding-bottom: 20px;
-        }
-
-        .navContainer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navLogo {
-            color: #FFFFFF;
-            font-weight: 800;
-            font-size: 1.6rem;
-        }
-
-        .navBtn {
-            color: #FFFFFF;
-        }
-
-        .content {
-            padding: 10px;
-            margin-top: 0px;
-            /* nav의 높이만큼 여백을 추가 */
-        }
-        .alertcon{
-            margin-top: 80px;
-        }
-
-        .fade-out {
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
+        
 
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -82,16 +20,16 @@
     
     <nav id="Nav">
         <div class="navContainer">
-            <div class="navLogo">🍊 뀰보드</div>
+            <a class="navLogo" href="{{ url_for('board.index') }}">🍊 뀰보드</a>
             <div>
                 <!-- logined user -->
                 {% if current_user.is_authenticated %}
-                    <a href="#" class="btn navBtn">내 정보</a>
+                    <a href="{{ url_for('acc.profile') }}" class="btn navBtn">내 정보</a>
                     <a href="{{ url_for('acc.logout') }}" class="btn navBtn">로그아웃</a>
                 <!-- anonymous user -->
                 {% else %}
                     <a href="{{ url_for('acc.login') }}" class="btn navBtn">로그인</a>
-                    <a href="#" class="btn navBtn">회원가입</a>
+                    <a href="{{ url_for('acc.signup') }}" class="btn navBtn">회원가입</a>
                 {% endif %}
             </div>
         </div>
