@@ -76,18 +76,26 @@
 </style>
 <script>
     function loadFile(input) {
-        let file = input.files[0]; // 선택파일 가져오기
+        let file = input.files[0]; // 선택한 파일 가져오기
 
-        let newImage = document.createElement("img"); //새 이미지 태그 생성
-
-        //이미지 source 가져오기
-        newImage.src = URL.createObjectURL(file);
-        newImage.style.width = "100%"; //div에 꽉차게 넣으려고
-        newImage.style.height = "100%";
-        newImage.style.objectFit = "cover"; // div에 넘치지 않고 들어가게
-
-        //이미지를 image-show div에 추가
+        // 이미지를 표시할 공간 가져오기
         let container = document.getElementById('image-show');
+        
+        // 이전 이미지가 있는 경우 제거
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+
+        // 새로운 이미지 요소 생성
+        let newImage = document.createElement("img");
+        newImage.style.width = "100%"; // 이미지 너비 설정
+        newImage.style.height = "100%"; // 이미지 높이 설정
+        newImage.style.objectFit = "cover"; // 이미지가 div에 맞게 잘리지 않도록 설정
+
+        // 파일 URL을 이미지의 src 속성으로 설정하여 미리보기 표시
+        newImage.src = URL.createObjectURL(file);
+
+        // 이미지를 이미지 표시 공간에 추가
         container.appendChild(newImage);
     }
 </script>
@@ -101,28 +109,34 @@
         <div class="custom_row_key">프로필 사진</div>
         <div class="custom_row_value">
             <form class="horizontal" method="post" enctype="multipart/form-data"> <!-- 이미지 파일 데이터에 알맞는 enctype 설정 -->
-                <div class="addImage" id="image-show"> <!-- 이미지 띄울 공간 -->
+                <div class="addImage" id="image-show">
+                    <img src="{{ url_for('static', filename=current_user.userpic) }}" style="width: 100%; height: 100%; object-fit: cover;"> <!-- 이미지 띄울 공간 -->
                 </div>
                 <input type="file" accept="image/*" onchange="loadFile(this)">
             </form>
         </div>
     </div>
     <div class="custom_row">
-        <div class="custom_row_key">소셜 계정</div>
-        <div class="custom_row_value">구글</div>
+        <div class="custom_row_key">계정등급</div>
+        <div class="custom_row_value">{% if current_user.grade %}관리자 계정{% else %}사용자 계정{% endif %}</div>
     </div>
     <div class="custom_row">
         <div class="custom_row_key">아이디</div>
-        <div class="custom_row_value">abcdefg</div>
+        <div class="custom_row_value">{{ current_user.username }}</div>
     </div>
     <div class="custom_row">
-        <div class="custom_row_key">비밀번호</div>
-        <div class="custom_row_value">password1293</div>
+        <div class="custom_row_key">이메일</div>
+        <div class="custom_row_value">{{ current_user.email }}</div>
     </div>
     <div class="custom_row">
         <div class="custom_row_key">계정 생성일</div>
-        <div class="custom_row_value">YYYY.MM.DD</div>
+        <div class="custom_row_value">{{ current_user.created_at.strftime("%Y-%m-%d %H:%M") }}</div>
     </div>
+    <div class="custom_row">
+        <div class="custom_row_key">자기 소개</div>
+        <div class="custom_row_value">{{ current_user.comment }}</div>
+    </div>
+
 </div>
 
 <div class="button_area">
