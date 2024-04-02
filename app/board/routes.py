@@ -53,7 +53,7 @@ def test_data():
     # title = '프로그래머스 42898. 등굣길'
     # title = 'SWEA 5658. 보물상자 비밀번호'
     title = '백준 DFS'
-    post = Post(title=title, body='body1', user_id=user.id, created_at=datetime.now(),
+    post = Post(title=title, body='body1', user_id=user.user_id, created_at=datetime.now(),
                 updated_at=datetime.now(), click_count=3)
 
     db.session.add(post)
