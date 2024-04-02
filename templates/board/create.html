@@ -5,22 +5,31 @@
 {% endblock %}
 {% block content %}
 <div>
-    <form action="">
+    <form id="createPostForm" method="post">
         <div class="horizontal margin_bottom">
-            <textarea id="custom_title" class="margin_right" placeholder="제목을 입력해 주세요" required></textarea>
+            <textarea name="title" id="custom_title" class="margin_right" placeholder="제목을 입력해 주세요" required></textarea>
             <div class="horizontal">
                 <div class="horizontal margin_right">
-                    <input type="checkbox" id="check1">
+                    <input name="secretCheck" type="checkbox" id="check1">
                     <label for="check1" class="margin_right_2"></label>
                     비밀글
+                    <input type="hidden" name="secretValue" id="secretValue"> <!-- hidden input 추가 -->
                 </div>
-                <button type="submit" class="button1">등록</button>
+                <button type="submit" class="button1" onclick="submitCreatePost()">등록</button>
             </div>
         </div>
         <div>
-            <textarea id="custom_url" placeholder="문제 URL을 입력해 주세요"></textarea>
+            <textarea name="problemUrl" id="custom_url" placeholder="문제 URL을 입력해 주세요"></textarea>
         </div>
-        <textarea id="custom_contents" placeholder="내용을 입력해 주세요" required></textarea>
+        <textarea name="body" id="custom_contents" placeholder="내용을 입력해 주세요" required></textarea>
     </form>
 </div>
+<script>
+    function submitCreatePost() {
+        var checkBox = document.getElementById("check1");
+        var secretValue = checkBox.checked; // 체크박스가 체크되었는지 여부에 따라 true 또는 false 값을 가져옴
+        document.getElementById("secretValue").value = secretValue; // hidden input에 값을 설정
+        document.getElementById("createPostForm").submit();
+    }
+</script>
 {% endblock %}

@@ -19,6 +19,9 @@ class User(UserMixin, db.Model):
     posts = relationship('Post', back_populates='user', lazy='joined')
     comments = relationship('Comment', back_populates='user', lazy='joined')
 
+    def get_id(self):
+        return str(self.user_id)
+
     def __repr__(self):
         return f"{self.username} <{self.email}>"
 

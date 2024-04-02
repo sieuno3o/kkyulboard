@@ -16,11 +16,14 @@ def index():
     # 사용자의 불순한 값 대비 코드
     try:
         if sort == 'old':
-            pag = Post.query.order_by(Post.created_at.asc()).paginate(page=page, per_page=perPage)
+            pag = Post.query.order_by(Post.created_at.asc()).paginate(
+                page=page, per_page=perPage)
         elif sort == 'recent':
-            pag = Post.query.order_by(Post.created_at.desc()).paginate(page=page, per_page=perPage)
+            pag = Post.query.order_by(Post.created_at.desc()).paginate(
+                page=page, per_page=perPage)
         elif sort == 'click':
-            pag = Post.query.order_by(Post.click_count.desc()).paginate(page=page, per_page=perPage)
+            pag = Post.query.order_by(Post.click_count.desc()).paginate(
+                page=page, per_page=perPage)
         else:
             pag = Post.query.paginate(page=page, per_page=perPage)
     except:
@@ -40,8 +43,26 @@ def detail():
     return render_template('board/detail.html', comments=comments, isLogin=isLogin)
 
 
-@board_bp.route('/create')
-def create():
+
+@board_bp.route('/create', methods=["GET", "POST"])
+def createPost():
+    if request.method == "POST":
+        title = request.form.get("title")
+        secret = request.form.get("secretValue")
+        secret_bool = True if secret == 'true' else False
+        problemUrl = request.form.get("problemUrl")
+        body = request.form.get("body")
+        user_id = "작성자"  # 수정 필요
+        status = "normal"
+        created_at = datetime.now()
+        updated_at = datetime.now()
+        click_count = 0
+        like_count = 0
+        post = Post(title=title, body=body, problem_url=problemUrl, secret_mode=secret_bool, user_id=user_id, status=status,
+                    created_at=created_at, updated_at=updated_at, click_count=click_count, like_count=like_count)
+        db.session.add(post)
+        db.session.commit()
+        return redirect(url_for('board.index'))
     return render_template('board/create.html')
 
 
@@ -98,7 +119,8 @@ def add_comments():
 def test_data():
     user = User.query.filter_by(username='이상일').first()
     if not user:
-        user = User(username='이상일', password='1111', email='email2', grade='', userpic='')
+        user = User(username='이상일', password='1111',
+                    email='email2', grade='', userpic='')
         db.session.add(user)
         db.session.commit()
 
@@ -120,11 +142,14 @@ def test_data():
     # 사용자의 불순한 값 대비 코드
     try:
         if sort == 'old':
-            pag = Post.query.order_by(Post.created_at.asc()).paginate(page=page, per_page=perPage)
+            pag = Post.query.order_by(Post.created_at.asc()).paginate(
+                page=page, per_page=perPage)
         elif sort == 'recent':
-            pag = Post.query.order_by(Post.created_at.desc()).paginate(page=page, per_page=perPage)
+            pag = Post.query.order_by(Post.created_at.desc()).paginate(
+                page=page, per_page=perPage)
         elif sort == 'click':
-            pag = Post.query.order_by(Post.click_count.desc()).paginate(page=page, per_page=perPage)
+            pag = Post.query.order_by(Post.click_count.desc()).paginate(
+                page=page, per_page=perPage)
         else:
             pag = Post.query.paginate(page=page, per_page=perPage)
     except:
