@@ -65,19 +65,18 @@
 
 
         <div class="page-nav">
-            <div class="col justify-content-center d-flex">
+            <div class="col justify-content-center d-flex align-items-center">
                 <!-- Pagination Links -->
                 {% if pag.has_prev %}
-                    <a class=nav-item" href="{{ url_for('board.index', page=pag.prev_num, sort=sort) }}">Previous</a>
+                    <a class="page-nav-item" href="{{ url_for('board.index', page=pag.prev_num, sort=sort) }}"><</a>
                 {% endif %}
 
                 {% for page_num in pag.iter_pages() %}
                     {% if page_num %}
                         {% if page_num != pag.page %}
-                            <a class=nav-item"
-                               href="{{ url_for('board.index', page=page_num, sort=sort) }}">{{ page_num }}</a>
+                            <a class="page-nav-item" href="{{ url_for('board.index', page=page_num, sort=sort) }}">{{ page_num }}</a>
                         {% else %}
-                            <a class=nav-item">{{ page_num }}</a>
+                            <a class="page-nav-item-current">{{ page_num }}</a>
                         {% endif %}
                     {% else %}
                         ...
@@ -85,7 +84,7 @@
                 {% endfor %}
 
                 {% if pag.has_next %}
-                    <a class=nav-item" href="{{ url_for('board.index', page=pag.next_num, sort=sort) }}">Next</a>
+                    <a class="page-nav-item" href="{{ url_for('board.index', page=pag.next_num, sort=sort) }}">></a>
                 {% endif %}
             </div>
         </div>

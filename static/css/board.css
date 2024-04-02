@@ -49,6 +49,17 @@
     color: #FFFFFF;
 }
 
-.page-nav a{
-    margin-right: 10px;
+.page-nav .page-nav-item {
+    margin-left: 12px;
+    margin-right: 12px;
+    color: #222222;
+}
+
+.page-nav .page-nav-item-current {
+    margin-left: 9px;
+    margin-right: 9px;
+    color: #FAC17E;
+    border: 1px solid #FAC17E;
+    border-radius: 5px;
+    padding: 3px 10px;
 }
