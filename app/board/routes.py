@@ -46,7 +46,7 @@ def createPost():
     if request.method == "POST":
         title = request.form.get("title")
         secret = request.form.get("secretValue")
-        secret_bool = True if secret == 'True' else False
+        secret_bool = True if secret == 'true' else False
         problemUrl = request.form.get("problemUrl")
         body = request.form.get("body")
         user_id = "작성자"  # 수정 필요
