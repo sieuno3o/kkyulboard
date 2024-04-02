@@ -1,10 +1,23 @@
 {% extends "layout.html" %}
 {% block title %}LOGIN PAGE{% endblock %}
-
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
+{% endblock %}
 {% block content %}
-    <form method="post">
-        <input type="text" name="userid">
-        <input type="password" name="userpw">
-        <button>로그인</button>
-    </form>
+<div class="customBody vertical">
+    <div class="customLogo loginLogoBox">
+        🍊 뀰보드 🍊
+    </div>
+    <div class=" vertical">
+        <form method="post" class="vertical loginBox">
+            <input type="text" name="userid" placeholder="ID" class="customInput">
+            <input type="password" name="userpw" placeholder="Password" class="customInput">
+            <button class="button2">로그인</button>
+        </form>
+        <div id="loginBottomArea">
+            <a href="{{ url_for('acc.signup') }}" class="button3">회원가입</a>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
