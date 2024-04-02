@@ -4,29 +4,42 @@
 
 {% endblock %}
 {% block content %}
-<div class="container">
-    {{context}}
-    <div>
-        <div class="row">
-            <div class="col">
-                <h3>조회 결과 {{ postsCount }} 건/ 총 {{ pag.total }}건</h3>
+    <div class="container">
+        {{ context }}
+        <div>
+            <div class="row">
+                <div class="col align-items-center d-flex">
+                    <div class="board-text-line">
+                        <h2>조회 결과</h2>
+                        <h2 class="post-count">{{ postsCount }}</h2>
+                        <h2>건</h2>
+                        <h3>/ 총 {{ pag.total }}건</h3>
+                    </div>
+                </div>
+
+                <div class="col justify-content-end d-flex">
+                    <div class="col mb-2 mx-2 justify-content-end d-flex">
+                        <select id="sort-by-select" class="form-select form-select-color-custom form-select-size-custom"
+                                aria-label="">
+                            <option value="1" {% if sort=='recent' %}selected{% endif %}>최신순</option>
+                            <option value="2" {% if sort=='old' %}selected{% endif %}>오래된순</option>
+                            <option value="3" {% if sort=='click' %}selected{% endif %}>조회순</option>
+                        </select>
+                    </div>
+
+                    {% if isLogin %}
+                        <a href="{{ url_for('board.create') }}" class="btn btn-theme-color mb-2 mx-2">글작성</a>
+                    {% endif %}
+
+                    <form class="form-inline" action="{{ url_for('board.test_data') }}" method="POST">
+                        <button type="submit" class="btn btn-primary mb-2 mx-2">테스트 데이터 추가</button>
+                    </form>
+
+                </div>
             </div>
-            <div class="col justify-content-end d-flex">
 
-                <a href="{{ url_for('board.index', page=pag.page, sort='asc') }}" class="btn btn-primary mb-2 mx-2">오름차순 정렬</a>
-                <a href="{{ url_for('board.index', page=pag.page, sort='desc') }}" class="btn btn-primary mb-2 mx-2">내림차순 정렬</a>
-                <a href="{{ url_for('board.create') }}" class="btn btn-primary mb-2 mx-2">글작성</a>
-
-            
-                <form class="form-inline" action="#" method="POST">
-                    <button type="submit" class="btn btn-primary mb-2 mx-2">테스트 데이터 추가</button>
-                </form>
-
-            </div>
-        </div>
-
-        <table class="table postTable">
-            <thead>
+            <table class="table postTable table-bordered">
+                <thead>
                 <tr>
                     <th class="postNum">게시글 번호</th>
                     <th class="postTitle">제목</th>
@@ -34,44 +47,69 @@
                     <th class="postDate">작성일</th>
                     <th class="postHit">조회수</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 {% for post in pag.items %}
-                <tr>
-                    <td style="text-align: center;">{{ stIdx + loop.index0 }}</td>
-                    <td><a href="#">{{ post.title }}</a></td>
-                    <td style="text-align: center;">{{ post.user.username }}</td>
-                    <td style="text-align: center;">{{ post.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
-                    <td style="text-align: center;">{{ post.click_count }}</td>
-                </tr>
+                    <tr>
+                        <td style="text-align: center;">{{ stIdx + loop.index0 }}</td>
+                        <td><a class="board-td-custom" href="#">{{ post.title }}</a></td>
+                        <td style="text-align: center;">{{ post.user.username }}</td>
+                        <td style="text-align: center;">{{ post.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                        <td style="text-align: center;">{{ post.click_count }}</td>
+                    </tr>
                 {% endfor %}
 
-            </tbody>
-        </table>
-    </div>
+                </tbody>
+            </table>
+        </div>
 
 
+        <div class="page-nav">
+            <div class="col justify-content-center d-flex align-items-center">
+                <!-- Pagination Links -->
+                {% if pag.has_prev %}
+                    <a class="page-nav-item" href="{{ url_for('board.index', page=pag.prev_num, sort=sort) }}"><</a>
+                {% endif %}
 
-    <!-- Pagination Links -->
-    {% if pag.has_prev %}
-        <a href="{{ url_for('board.index', page=pag.prev_num, sort=sort) }}">Previous</a>
-    {% endif %}
+                {% for page_num in pag.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != pag.page %}
+                            <a class="page-nav-item" href="{{ url_for('board.index', page=page_num, sort=sort) }}">{{ page_num }}</a>
+                        {% else %}
+                            <a class="page-nav-item-current">{{ page_num }}</a>
+                        {% endif %}
+                    {% else %}
+                        ...
+                    {% endif %}
+                {% endfor %}
 
-    {% for page_num in pag.iter_pages() %}
-        {% if page_num %}
-            {% if page_num != pag.page %}
-                <a href="{{ url_for('board.index', page=page_num, sort=sort) }}">{{ page_num }}</a>
-            {% else %}
-                <a>{{ page_num }}</a>
-            {% endif %}
-        {% else %}
-            ...
-        {% endif %}
-    {% endfor %}
+                {% if pag.has_next %}
+                    <a class="page-nav-item" href="{{ url_for('board.index', page=pag.next_num, sort=sort) }}">></a>
+                {% endif %}
+            </div>
+        </div>
+    </div> <!-- /container -->
 
-    {% if pag.has_next %}
-        <a href="{{ url_for('board.index', page=pag.next_num, sort=sort) }}">Next</a>
-    {% endif %}
-</div> <!-- /container -->
+    <script>
+        // select 요소에서 변경이 일어날 때마다 호출되는 함수
+        var selectElement = document.getElementById('sort-by-select');
+        selectElement.addEventListener('change', function (event) {
+            // 선택된 옵션의 값을 가져옴
+            var selectedValue = event.target.value;
+            let page = {{ pag.page }};
+            let sort;
+
+            if (selectedValue === '1') {
+                sort = 'recent';
+            } else if (selectedValue === '2') {
+                sort = 'old';
+            } else {
+                sort = 'click'
+            }
+
+            let redirectTo = `index?page=${page}&sort=${sort}`;
+            window.location.href = redirectTo;
+        });
+    </script>
 {% endblock %}
 
