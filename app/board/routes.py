@@ -4,19 +4,22 @@ from ..database import *
 
 board_bp = Blueprint('board', __name__, url_prefix='/board')
 
+
 @board_bp.route('/index')
 def index():
     page = request.args.get('page', 1, type=int)
-    sort = request.args.get('sort', None, type=str)
+    sort = request.args.get('sort', 'recent', type=str)
 
     perPage = 20
 
     # 사용자의 불순한 값 대비 코드
     try:
-        if sort == 'asc':
+        if sort == 'old':
             pag = Post.query.order_by(Post.created_at.asc()).paginate(page=page, per_page=perPage)
-        elif sort == 'desc':
+        elif sort == 'recent':
             pag = Post.query.order_by(Post.created_at.desc()).paginate(page=page, per_page=perPage)
+        elif sort == 'click':
+            pag = Post.query.order_by(Post.click_count.desc()).paginate(page=page, per_page=perPage)
         else:
             pag = Post.query.paginate(page=page, per_page=perPage)
     except:
@@ -27,32 +30,10 @@ def index():
 
     return render_template('board/index.html', pag=pag, postsCount=postsCount, stIdx=stIdx, sort=sort)
 
+
 @board_bp.route('/create')
 def create():
     return render_template('board/create.html')
-
-
-
-# @board_bp.route('/recent', methods=['GET'])
-# def recent():
-#     posts_results = Post.query.order_by(Post.id.desc()).limit(20).all()
-#     for post in posts_results:
-#         post.updated_at = datetime.date(post.updated_at)
-
-#     search_count = len(posts_results)
-#     total_count = Post.query.count()
-#     return render_template('board/index.html', posts=posts_results, search_count=search_count, total_count=total_count)
-
-
-# @board_bp.route('/oldest', methods=['GET'])
-# def oldest():
-#     posts_results = Post.query.order_by(Post.id.asc()).limit(20).all()
-#     for post in posts_results:
-#         post.updated_at = datetime.date(post.updated_at)
-
-#     search_count = len(posts_results)
-#     total_count = Post.query.count()
-#     return render_template('board/index.html', posts=posts_results, search_count=search_count, total_count=total_count)
 
 
 @board_bp.route('/test_data', methods=['POST'])
@@ -63,15 +44,35 @@ def test_data():
         db.session.add(user)
         db.session.commit()
 
-    post = Post(title='post2', body='body1', user_id=user.id, created_at=datetime.now(),
-                updated_at=datetime.now(), click_count=1)
+    # title = '백준 16564. 히오스 프로그래머'
+    # title = '프로그래머스 42898. 등굣길'
+    # title = 'SWEA 5658. 보물상자 비밀번호'
+    title = '백준 DFS'
+    post = Post(title=title, body='body1', user_id=user.id, created_at=datetime.now(),
+                updated_at=datetime.now(), click_count=3)
 
     db.session.add(post)
     db.session.commit()
 
-    posts_results = Post.query.order_by(Post.id.desc()).limit(20).all()
-    for post in posts_results:
-        post.updated_at = datetime.date(post.updated_at)
+    page = request.args.get('page', 1, type=int)
+    sort = request.args.get('sort', None, type=str)
 
-    return render_template('board/index.html', posts=posts_results)
+    perPage = 20
 
+    # 사용자의 불순한 값 대비 코드
+    try:
+        if sort == 'old':
+            pag = Post.query.order_by(Post.created_at.asc()).paginate(page=page, per_page=perPage)
+        elif sort == 'recent':
+            pag = Post.query.order_by(Post.created_at.desc()).paginate(page=page, per_page=perPage)
+        elif sort == 'click':
+            pag = Post.query.order_by(Post.click_count.desc()).paginate(page=page, per_page=perPage)
+        else:
+            pag = Post.query.paginate(page=page, per_page=perPage)
+    except:
+        return redirect(url_for('board.index'))
+
+    stIdx = (pag.page - 1) * pag.per_page + 1
+    postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
+
+    return render_template('board/index.html', pag=pag, postsCount=postsCount, stIdx=stIdx, sort=sort)

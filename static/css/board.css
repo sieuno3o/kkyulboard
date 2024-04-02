@@ -1,0 +1,50 @@
+.table thead th {
+    text-align: center;
+    font-weight: normal;
+    background-color: rgba(250, 193, 126, 0.3);
+}
+.table th:nth-child(1) {
+    width: 15%;
+}
+.table th:nth-child(2) {
+    width: 35%;
+}
+.table th:nth-child(3) {
+    width: 10%;
+}
+.table th:nth-child(4) {
+    width: 20%;
+}
+.table th:nth-child(5) {
+    width: 10%;
+}
+
+.board-text-line h2 {
+    font-size: 18px;
+    display: inline;
+}
+
+.board-text-line h3 {
+    font-size: 16px;
+    display: inline;
+}
+
+.board-text-line .post-count {
+    color: #FAC17E;
+    font-style: italic;
+}
+
+.form-select-color-custom {
+    background-color: #AED7C6;
+    color: #FFFFFF;
+}
+
+.form-select-size-custom {
+    width: 150px;
+}
+
+.btn-theme-color,
+.btn-theme-color:hover {
+    background-color: #FAC17E;
+    color: #FFFFFF;
+}
