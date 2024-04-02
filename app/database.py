@@ -5,6 +5,7 @@ from sqlalchemy import ForeignKey
 
 db = SQLAlchemy()
 
+
 class User(UserMixin, db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
@@ -13,6 +14,8 @@ class User(UserMixin, db.Model):
     grade = db.Column(db.String, default=0)
     userpic = db.Column(db.String)
     posts = relationship('Post', back_populates='user', lazy='joined')
+    comments = relationship('Comment', back_populates='user', lazy='joined')
+
     # posts = relationship('Post', back_populates='user', lazy='select')
 
     def __repr__(self):
@@ -32,7 +35,20 @@ class Post(db.Model):
     like_count = db.Column(db.Integer, nullable=True)
     secret_mode = db.Column(db.Boolean, nullable=True)
     user = relationship('User', back_populates='posts', lazy='joined')
+    comments = relationship('Comment', back_populates='post', lazy='joined')
+
     # user = relationship('User', back_populates='posts', lazy='select')
 
     def __repr__(self):
         return f"[{self.user}] {self.title}"
+
+
+class Comment(db.Model):
+    comment_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    comments = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('user.user_id'), nullable=False)
+    post_id = db.Column(db.Integer, ForeignKey('post.post_id'), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime, nullable=False)
+    post = relationship('Post', back_populates='comments', lazy='joined')
+    user = relationship('User', back_populates='comments', lazy='joined')
