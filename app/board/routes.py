@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import current_user
 from ..database import *
 
 board_bp = Blueprint('board', __name__, url_prefix='/board')
@@ -28,7 +29,8 @@ def index():
     stIdx = (pag.page - 1) * pag.per_page + 1
     postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
 
-    return render_template('board/index.html', pag=pag, postsCount=postsCount, stIdx=stIdx, sort=sort)
+    isLogin = current_user.is_authenticated
+    return render_template('board/index.html', pag=pag, postsCount=postsCount, stIdx=stIdx, sort=sort, isLogin=isLogin)
 
 
 @board_bp.route('/create')
@@ -75,4 +77,5 @@ def test_data():
     stIdx = (pag.page - 1) * pag.per_page + 1
     postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
 
-    return render_template('board/index.html', pag=pag, postsCount=postsCount, stIdx=stIdx, sort=sort)
+    isLogin = current_user.is_authenticated
+    return render_template('board/index.html', pag=pag, postsCount=postsCount, stIdx=stIdx, sort=sort, isLogin=isLogin)

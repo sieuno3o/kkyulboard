@@ -27,7 +27,9 @@
                         </select>
                     </div>
 
-                    <a href="{{ url_for('board.create') }}" class="btn btn-theme-color mb-2 mx-2">글작성</a>
+                    {% if isLogin %}
+                        <a href="{{ url_for('board.create') }}" class="btn btn-theme-color mb-2 mx-2">글작성</a>
+                    {% endif %}
 
                     <form class="form-inline" action="{{ url_for('board.test_data') }}" method="POST">
                         <button type="submit" class="btn btn-primary mb-2 mx-2">테스트 데이터 추가</button>
@@ -72,7 +74,8 @@
                 {% for page_num in pag.iter_pages() %}
                     {% if page_num %}
                         {% if page_num != pag.page %}
-                            <a class=nav-item" href="{{ url_for('board.index', page=page_num, sort=sort) }}">{{ page_num }}</a>
+                            <a class=nav-item"
+                               href="{{ url_for('board.index', page=page_num, sort=sort) }}">{{ page_num }}</a>
                         {% else %}
                             <a class=nav-item">{{ page_num }}</a>
                         {% endif %}
