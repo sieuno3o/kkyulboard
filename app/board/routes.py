@@ -45,7 +45,8 @@ def detail():
 def createPost():
     if request.method == "POST":
         title = request.form.get("title")
-        secret = request.form.get("secretCheck")
+        secret = request.form.get("secretValue")
+        secret_bool = True if secret == 'True' else False
         problemUrl = request.form.get("problemUrl")
         body = request.form.get("body")
         user_id = "작성자"  # 수정 필요
@@ -54,7 +55,7 @@ def createPost():
         updated_at = datetime.now()
         click_count = 0
         like_count = 0
-        post = Post(title=title, body=body, problem_url=problemUrl, secret_mode=secret, user_id=user_id, status=status,
+        post = Post(title=title, body=body, problem_url=problemUrl, secret_mode=secret_bool, user_id=user_id, status=status,
                     created_at=created_at, updated_at=updated_at, click_count=click_count, like_count=like_count)
         db.session.add(post)
         db.session.commit()
