@@ -69,10 +69,9 @@ def createPost():
 @board_bp.route('/get_comments')
 def get_comments():
     comments = Comment.query.all()
-    isLogin = True
     return jsonify(
         [{'username': comment.user.username, 'comments': comment.comments, 'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
-          'is_login': isLogin} for comment
+          'is_login': current_user.is_authenticated} for comment
          in
          comments])
 
@@ -110,10 +109,8 @@ def add_comments():
     db.session.add(comment)
     db.session.commit()
 
-    isLogin = True
-
     return jsonify({'username': comment.user.username, 'comments': comment.comments, 'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
-                    'is_login': isLogin})
+                    'is_login': current_user.is_authenticated})
 
 @board_bp.route('/test_data', methods=['POST'])
 def test_data():
