@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 from flask_login import UserMixin
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import ForeignKey
@@ -12,6 +13,8 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String, unique=True)
     grade = db.Column(db.String, default=0)
     userpic = db.Column(db.String)
+    comment = db.Column(db.String)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     posts = relationship('Post', back_populates='user', lazy='joined')
     # posts = relationship('Post', back_populates='user', lazy='select')
 
