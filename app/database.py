@@ -6,7 +6,7 @@ from sqlalchemy import ForeignKey
 db = SQLAlchemy()
 
 class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String)
     email = db.Column(db.String, unique=True)
@@ -20,10 +20,10 @@ class User(UserMixin, db.Model):
 
 
 class Post(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    post_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String, nullable=False)
     body = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('user.user_id'), nullable=False)
     status = db.Column(db.String, nullable=True)
     problem_url = db.Column(db.String, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False)

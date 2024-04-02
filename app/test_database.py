@@ -44,11 +44,11 @@ class TestDomain(unittest.TestCase):
         self.assertEqual(2, len(users))
 
         posts = [
-            Post(title='post1', body='body1', user_id=users[0].id, created_at=datetime.now(),
+            Post(title='post1', body='body1', user_id=users[0].user_id, created_at=datetime.now(),
                  updated_at=datetime.now()),
-            Post(title='post2', body='body2', user_id=users[0].id, created_at=datetime.now(),
+            Post(title='post2', body='body2', user_id=users[0].user_id, created_at=datetime.now(),
                  updated_at=datetime.now()),
-            Post(title='post3', body='body3', user_id=users[1].id, created_at=datetime.now(), updated_at=datetime.now())
+            Post(title='post3', body='body3', user_id=users[1].user_id, created_at=datetime.now(), updated_at=datetime.now())
         ]
 
         with self.app.app_context():
