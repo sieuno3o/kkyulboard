@@ -11,40 +11,40 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/board.css') }}">
     <style>
-        
+
 
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
-    
+
     <nav id="Nav">
         <div class="navContainer">
             <a class="navLogo" href="{{ url_for('board.index') }}">🍊 뀰보드</a>
             <div>
+                <a href="{{ url_for('board.index') }}" class="btn navBtn">게시판</a>
                 <!-- logined user -->
                 {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('acc.profile') }}" class="btn navBtn">내 정보</a>
-                    <a href="{{ url_for('acc.logout') }}" class="btn navBtn">로그아웃</a>
+                <a href="{{ url_for('acc.profile') }}" class="btn navBtn">내정보</a>
+                <a href="{{ url_for('acc.logout') }}" class="btn navBtn loginBtn">로그아웃</a>
                 <!-- anonymous user -->
                 {% else %}
-                    <a href="{{ url_for('acc.login') }}" class="btn navBtn">로그인</a>
-                    <a href="{{ url_for('acc.signup') }}" class="btn navBtn">회원가입</a>
+                <a href="{{ url_for('acc.login') }}" class="btn loginBtn">로그인</a>
                 {% endif %}
             </div>
         </div>
     </nav>
-    
+
     <div class="alertcon">
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div id="alert" class="alert alert-{{ message[0]}} alert-dismissible fade show" role="alert">
-                        {{ message[1] }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for message in messages %}
+        <div id="alert" class="alert alert-{{ message[0]}} alert-dismissible fade show customAlert" role="alert">
+            {{ message[1] }}
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
     </div>
 
@@ -56,22 +56,23 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
-</script>
+    </script>
 <script>
     // 3초 후에 알림 창을 숨기는 함수
     function hideAlert() {
-    var alertBox = document.getElementById("alert");
-    alertBox.classList.add("fade-out"); // fade-out 클래스 추가하여 투명도를 조정하여 숨김
-    setTimeout(function() {
-        alertBox.style.display = "none"; // display 속성을 none으로 변경하여 숨김
-    }, 1000); // 1초 후에 숨김 처리
+        var alertBox = document.getElementById("alert");
+        alertBox.classList.add("fade-out"); // fade-out 클래스 추가하여 투명도를 조정하여 숨김
+        setTimeout(function () {
+            alertBox.style.display = "none"; // display 속성을 none으로 변경하여 숨김
+        }, 1000); // 1초 후에 숨김 처리
     }
 
     // 페이지 로드 후 3초 후에 hideAlert 함수 호출
-    window.onload = function() {
-    setTimeout(hideAlert, 2000); // 3초 후에 hideAlert 함수 호출
+    window.onload = function () {
+        setTimeout(hideAlert, 2000); // 3초 후에 hideAlert 함수 호출
     };
 </script>
+
 </html>
 
 {% block script %}
