@@ -19,7 +19,8 @@
 
                 <div class="col justify-content-end d-flex">
                     <div class="col mb-2 mx-2 justify-content-end d-flex">
-                        <select id="sort-by-select" class="form-select form-select-color-custom form-select-size-custom" aria-label="">
+                        <select id="sort-by-select" class="form-select form-select-color-custom form-select-size-custom"
+                                aria-label="">
                             <option value="1" {% if sort=='recent' %}selected{% endif %}>최신순</option>
                             <option value="2" {% if sort=='old' %}selected{% endif %}>오래된순</option>
                             <option value="3" {% if sort=='click' %}selected{% endif %}>조회순</option>
@@ -61,27 +62,29 @@
         </div>
 
 
-        <div class="col">
-            <!-- Pagination Links -->
-            {% if pag.has_prev %}
-                <a href="{{ url_for('board.index', page=pag.prev_num, sort=sort) }}">Previous</a>
-            {% endif %}
-
-            {% for page_num in pag.iter_pages() %}
-                {% if page_num %}
-                    {% if page_num != pag.page %}
-                        <a href="{{ url_for('board.index', page=page_num, sort=sort) }}">{{ page_num }}</a>
-                    {% else %}
-                        <a>{{ page_num }}</a>
-                    {% endif %}
-                {% else %}
-                    ...
+        <div class="page-nav">
+            <div class="col justify-content-center d-flex">
+                <!-- Pagination Links -->
+                {% if pag.has_prev %}
+                    <a class=nav-item" href="{{ url_for('board.index', page=pag.prev_num, sort=sort) }}">Previous</a>
                 {% endif %}
-            {% endfor %}
 
-            {% if pag.has_next %}
-                <a href="{{ url_for('board.index', page=pag.next_num, sort=sort) }}">Next</a>
-            {% endif %}
+                {% for page_num in pag.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != pag.page %}
+                            <a class=nav-item" href="{{ url_for('board.index', page=page_num, sort=sort) }}">{{ page_num }}</a>
+                        {% else %}
+                            <a class=nav-item">{{ page_num }}</a>
+                        {% endif %}
+                    {% else %}
+                        ...
+                    {% endif %}
+                {% endfor %}
+
+                {% if pag.has_next %}
+                    <a class=nav-item" href="{{ url_for('board.index', page=pag.next_num, sort=sort) }}">Next</a>
+                {% endif %}
+            </div>
         </div>
     </div> <!-- /container -->
 
