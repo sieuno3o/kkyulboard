@@ -32,6 +32,9 @@ def index():
     isLogin = current_user.is_authenticated
     return render_template('board/index.html', pag=pag, postsCount=postsCount, stIdx=stIdx, sort=sort, isLogin=isLogin)
 
+@board_bp.route('/detail')
+def detail():
+    return render_template('board/detail.html')
 
 @board_bp.route('/create')
 def create():
