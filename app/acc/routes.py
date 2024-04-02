@@ -11,9 +11,11 @@ acc_bp = Blueprint('acc', __name__, url_prefix='/acc')
 def index():
     return render_template('acc/index.html')
 
+
 @acc_bp.route('/profile')
 def profile():
     return render_template('acc/profile.html')
+
 
 
 @acc_bp.route('/login', methods=['GET', 'POST'])
@@ -28,9 +30,9 @@ def login():
                 login_user(user)
                 return redirect(url_for('acc.index'))
             else:
-                flash('아이디나 패스워드를 확인해주세요!', 'danger')
+                flash('아이디나 패스워드를 확인해 주세요!', 'danger')
         else:
-            flash('아이디나 패스워드를 확인해주세요!', 'danger')
+            flash('아이디나 패스워드를 확인해 주세요!', 'danger')
     return render_template('acc/login.html')
 
 @acc_bp.route('/signup', methods=["GET", "POST"])
