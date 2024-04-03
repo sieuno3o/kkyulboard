@@ -33,5 +33,17 @@
 }
 
 .comment-text-line {
-    margin-bottom: 5px;
+    margin-bottom: 15px;
+}
+
+.detail-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.detail-comment {
+    width: 85%;
+    margin: 0 auto;
+    display: block;
 }
