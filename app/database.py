@@ -18,6 +18,7 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now)
     posts = relationship('Post', back_populates='user', lazy='joined')
     comments = relationship('Comment', back_populates='user', lazy='joined')
+    likes = relationship('Like', back_populates='user', lazy='joined')
 
     def get_id(self):
         return str(self.user_id)
@@ -40,6 +41,7 @@ class Post(db.Model):
     secret_mode = db.Column(db.Boolean, nullable=True)
     user = relationship('User', back_populates='posts', lazy='joined')
     comments = relationship('Comment', back_populates='post', lazy='joined', cascade='all, delete-orphan')
+    likes = relationship('Like', back_populates='post', lazy='joined', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"[{self.user}] {self.title}"
@@ -52,5 +54,17 @@ class Comment(db.Model):
     post_id = db.Column(db.Integer, ForeignKey('post.post_id'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     updated_at = db.Column(db.DateTime, nullable=False)
+    post = relationship('Post', back_populates='comments', lazy='joined')
+    user = relationship('User', back_populates='comments', lazy='joined')
+
+
+class Like(db.Model):
+    like_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, ForeignKey('user.user_id'), nullable=False)
+    post_id = db.Column(db.Integer, ForeignKey('post.post_id'), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime, nullable=False)
+    deleted_at = db.Column(db.Boolean, nullable=False, default=False)
+
     post = relationship('Post', back_populates='comments', lazy='joined')
     user = relationship('User', back_populates='comments', lazy='joined')
