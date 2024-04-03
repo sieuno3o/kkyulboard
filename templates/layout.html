@@ -13,11 +13,9 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/comment.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/detail.css') }}">
     <style>
-        @font-face { /* 지마켓 산스 */
-            font-family: 'GmarketSansMedium';
-            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
+        @import url(//fonts.googleapis.com/earlyaccess/notosanskr.css); 
+        .notosanskr * { 
+        font-family: 'Noto Sans KR', sans-serif;
         }
         @font-face { /* 제주 돌담 */
             font-family: 'EF_jejudoldam';
@@ -33,6 +31,7 @@
         }
 
         *{
+            font-family: 'Noto Sans KR';
             cursor: none;
         }
         .cursor {
