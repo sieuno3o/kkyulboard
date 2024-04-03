@@ -5,14 +5,16 @@
 {% endblock %}
 {% block content %}
 <div class="customBody vertical">
-    <div class="customLogo loginLogoBox">
-        🍊 뀰보드 🍊
+    <div class="customLogo loginLogoBox horizontal textOrange">
+        <img class="navbarLogo marginRight16" src="/static/kkyul.png" alt="🍊">
+        뀰보드
+        <img class="navbarLogo marginLeft16" src="/static/kkyul.png" alt="🍊">
     </div>
     <div class=" vertical">
-        <form method="post" class="vertical loginBox">
+        <form method="post" class="vertical">
             <input type="text" name="userid" placeholder="ID" class="customInput">
             <input type="password" name="userpw" placeholder="Password" class="customInput">
-            <button class="button2">로그인</button>
+            <button class="button2 marginTop16">로그인</button>
         </form>
         <div id="loginBottomArea">
             <a href="{{ url_for('acc.signup') }}" class="button3">회원가입</a>
