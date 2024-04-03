@@ -14056,6 +14056,7 @@ input[id="check1"]:checked+label::after {
 
 .customBody {
     height: 100%;
+    padding: 16px;
 }
 
 .loginBox {
