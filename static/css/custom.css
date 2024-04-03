@@ -14272,6 +14272,13 @@ body {
     text-decoration: underline;
 }
 
+
+html{
+    height: 100%;
+}
+body{
+    min-height: 100%;
+
 .marginRight16 {
     margin-right: 16px;
 }
