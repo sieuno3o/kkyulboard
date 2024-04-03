@@ -14280,6 +14280,12 @@ body {
     text-decoration: underline;
 }
 
+html{
+    height: 100%;
+}
+body{
+    min-height: 100%;
+}
 
 
 /*# sourceMappingURL=bootstrap.min.css.map */
