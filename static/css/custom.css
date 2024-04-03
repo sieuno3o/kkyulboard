@@ -14207,6 +14207,33 @@ a.button3 {
     /* 선택 테두리 제거 */
 }
 
+
+.main {
+    padding: 50px 80px;
+    margin-top: 80px;
+    width: 1200px;
+    display: block;
+}
+
+.title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #fabe57;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mainText {
+    padding: 10px;
+}
+
 .navbarLogo {
     width: 32px;
     height: 32px;
@@ -14252,6 +14279,7 @@ body {
 .buttonSimple {
     text-decoration: underline;
 }
+
 
 
 /*# sourceMappingURL=bootstrap.min.css.map */

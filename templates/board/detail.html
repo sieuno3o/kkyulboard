@@ -1,35 +1,6 @@
 {% extends "layout.html" %}
 {% block title %}POST DETAIL{% endblock %}
 {% block head %}
-
-<style scoped>
-.main {
-    padding: 50px 80px;
-    margin-top: 80px;
-    width: 1200px;
-    display: block;
-}
-
-.title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 10px;
-    border-bottom: 3px solid #fabe57;
-}
-
-.center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.mainText {
-    padding: 10px;
-}
-</style>
-
 <div class="container">
     <div class="center">
         <div class="main">
@@ -56,7 +27,7 @@
     ==================================================================
                                 방명록
     ==================================================================
-     -->
+    -->
     <div class="comment-container">
         <div class="row mt-4">
             <div class="col">
@@ -87,7 +58,7 @@
                 <form id="comment-form" class="book" >
                     <div class="col-11">
                         <textarea id="text-comments" class="form-control" rows="3" placeholder="남기실 말씀을 적어주세요."
-                                  name="comments"></textarea>
+                                name="comments"></textarea>
                     </div>
                     <div class="col">
                         <button id="btn-register" type="submit" class="btn btn-primary mt-2">등록</button>
@@ -121,6 +92,7 @@
                     const tr = document.createElement('tr');
                     const tdUserName = document.createElement('td');
                     const tdComments = document.createElement('td');
+                    tdComments.setAttribute("class", "modSpace")
                     const tdUpdateDate = document.createElement('td');
 
                     tdUserName.textContent = comment.username;
@@ -175,6 +147,8 @@
             document.getElementById('btn-register').click();
         }
     });
+
+    `
 </script>
 
 {% endblock %}
