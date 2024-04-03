@@ -85,9 +85,13 @@
                         </div>
                     </td>
                     <td>
+                        날짜
                         <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapse-comments-0">
                             수정
+                        </button>
+                        <button class="btn btn-primary" type="button">
+                            삭제
                         </button>
                     </td>
                 </tr>
@@ -117,7 +121,7 @@
     const post_id = {{ post.post_id }}
     addEventListenersToElements(post_id);
 
-    {#refreshCommentList(post_id);#}
+    refreshCommentList(post_id);
 </script>
 
 {% endblock %}

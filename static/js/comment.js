@@ -25,34 +25,81 @@ function refreshCommentList(postId) {
             let idx = 0
             comments.forEach(comment => {
                 const tr = document.createElement('tr');
-                const tdUserName = document.createElement('td');
-                const tdComments = document.createElement('td');
-                tdComments.classList.add('changeComments')
-                const tdUpdateDate = document.createElement('td');
 
+                const collapsedCommentId = `collapse-comments-${idx}`
+
+                // user name
+                const tdUserName = document.createElement('td');
                 tdUserName.textContent = comment.username;
-                tdComments.textContent = comment.comments;
-                tdUpdateDate.textContent = comment.updated_at;
+
+                // comments
+                const tdComments = document.createElement('td');
+
+                // div content
+                const divContent = document.createElement('div')
+                divContent.classList.add('collapse')
+                divContent.classList.add('show')
+                divContent.id = collapsedCommentId
+                divContent.textContent = comment.comments
+
+                const divUpdate = document.createElement('div')
+                divUpdate.classList.add('collapse')
+                divUpdate.id = collapsedCommentId
+                const form = document.createElement('form')
+
+                const textArea = document.createElement('textarea')
+                textArea.id = 'update-comment-text'
+                textArea.classList.add('form-control')
+                textArea.rows = 3
+                textArea.textContent = comment.comments
+
+                const input = document.createElement('input')
+                input.type = 'hidden'
+                input.id = 'update-comment-id'
+                input.value = comment.comment_id
+
+                const btnUpdateFinish = document.createElement('button')
+                btnUpdateFinish.type = 'submit'
+                btnUpdateFinish.classList.add('btn')
+                btnUpdateFinish.classList.add('btn-primary')
+                btnUpdateFinish.classList.add('comment-update-btn')
+                btnUpdateFinish.textContent = '수정 완료'
+
+                form.appendChild(textArea)
+                form.appendChild(input)
+                form.appendChild(btnUpdateFinish)
+
+                divUpdate.appendChild(form)
+                tdComments.appendChild(divContent)
+                tdComments.appendChild(divUpdate)
+
+                //Date, Buttons
+                const tdDateAndButton = document.createElement('td');
+                tdDateAndButton.textContent = comment.updated_at;
 
                 if (comment.is_login && (comment.current_user_id === comment.user_id)) {
                     const updateBtnId = `btn-update-comment${idx}`;
                     const deleteBtnId = `btn-delete-comment${idx}`;
                     const btnUpdate = createButton('수정', updateBtnId);
+                    btnUpdate.setAttribute('data-bs-toggle', 'collapse')
+                    btnUpdate.setAttribute('data-bs-target', `#${collapsedCommentId}`)
+
                     const btnDelete = createButton('삭제', deleteBtnId);
 
-                    tdUpdateDate.appendChild(btnUpdate);
-                    tdUpdateDate.appendChild(btnDelete);
+                    tdDateAndButton.appendChild(btnUpdate);
+                    tdDateAndButton.appendChild(btnDelete);
 
                     addDeleteButtonListener(btnDelete, postId, comment.comment_id);
                 }
 
                 tr.appendChild(tdUserName);
                 tr.appendChild(tdComments);
-                tr.appendChild(tdUpdateDate);
+                tr.appendChild(tdDateAndButton);
 
                 tbody.appendChild(tr)
                 idx++
             });
+            comment.init(postId)
         });
 }
 
@@ -98,64 +145,38 @@ function addEventListenersToElements(postId) {
 
 }
 
-function addCommentEventHandler() {
-    console.log('called-2')
-        //수정시 동적으로 변경하는 작업
-    document.querySelectorAll('.changeComments').forEach(function (element) {
-        element.addEventListener('click', function () {
-            console.log('called')
-            // 기존 텍스트 내용 선택
-            const range = document.createRange();
-            range.selectNodeContents(this);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
+// 데이터 전송 객체 생성!
+var comment = {
+    // 이벤트 등록
+    init: function (postId) {
+        var _this = this;
 
-            const currentValue = this.textContent.trim();
-            const textareaElement = document.createElement('textarea');
-            // 클릭한 요소의 내용을 textarea로 교체
-            textareaElement.textContent = currentValue;
-
-            // 기존 요소를 숨기고 입력 요소를 추가
-            this.style.display = 'none';
-            this.parentNode.insertBefore(textareaElement, this.nextSibling);
-
-            // textarea에 포커스 주기
-            textareaElement.focus();
-            textareaElement.select();
-
-            // textarea에서 엔터 키 누르면 수정 완료
-            textareaElement.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    const updatedValue = textareaElement.value.trim();
-                    if (updatedValue !== '') {
-                        element.textContent = updatedValue;
-                        console.log('Updated value:', updatedValue);
-                    } else {
-                        element.textContent = currentValue;
-                    }
-                    // 입력 요소 제거 및 기존 요소 다시 표시
-                    textareaElement.parentNode.removeChild(textareaElement);
-                    element.style.display = 'inline';
-                }
-            });
-
-            // 포커스를 잃으면 수정 취소
-            textareaElement.addEventListener('blur', function () {
-                // 수정된 값이 비어있는 경우 현재 값으로 복원
-                if (textareaElement.value.trim() === '') {
-                    element.textContent = currentValue;
-                }
-                // 포커스를 잃은 경우 수정 취소
-                else {
-                    // 수정된 값을 해당 요소에 적용
-                    element.textContent = textareaElement.value.trim();
-                }
-
-                // 입력 요소 제거 및 기존 요소 다시 표시
-                textareaElement.parentNode.removeChild(textareaElement);
-                element.style.display = 'inline';
+        // 수정 버튼 변수화
+        const updateBtns = document.querySelectorAll('.comment-update-btn');
+        // 모든 수정 버튼별, 이벤트 등록
+        updateBtns.forEach(function (item) {
+            item.addEventListener('click', function () { // 클릭 이벤트 발생시,
+                var form = this.closest('form'); // 클릭 이벤트가 발생한 버튼에 제일 가까운 폼을 찾고,
+                _this.update(form, postId); // 해당 폼으로, 업데이트 수행한다!
             });
         });
-    })
+    },
+
+    // 댓글 수정
+    update: function (form, postId) {
+        var data = {
+            id: form.querySelector('#update-comment-id').value,
+            content: form.querySelector('#update-comment-text').value,
+        };
+
+        fetch('/board/update_comment', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json()).then(data => {
+            refreshCommentList(postId);
+        })
+    }
 }

@@ -185,6 +185,25 @@ def delete_comment(comment_id):
     return jsonify({'message': 'Comment deleted successfully'})
 
 
+@board_bp.route('/update_comment', methods=['POST', 'GET'])
+def update_comment():
+    data = request.json
+
+    if not data:
+        print(f'data is null')
+        return jsonify({'message': 'fail to update'})
+
+    commentId = data['id']
+    content = data['content']
+
+    comment = Comment.query.filter(Comment.comment_id == commentId).first()
+    if comment:
+        comment.comments = content
+        db.session.commit()
+
+    return jsonify({'message': 'Comment deleted successfully'})
+
+
 @board_bp.route('/test_data', methods=['POST'])
 def test_data():
     user = User.query.filter_by(username='이상일').first()
