@@ -38,10 +38,28 @@ def index():
 
 @board_bp.route('/detail')
 def detail():
-    comments = Comment.query.all()
+    post_id = request.args.get('post_id', None, type=int)
+
+    if post_id:
+        return redirect(url_for('board.render_detail', post_id=post_id))
+    else:
+        return redirect(url_for('board.index'))
+
+@board_bp.route('/detail/<post_id>')
+def render_detail(post_id):
+    post = Post.query.filter_by(post_id=post_id).first()
+
+    # post_id에 해당하는 데이터가 없으면 index로 redirect
+    if not post:
+        return redirect(url_for('board.index'))
+
+    # click 카운트 추가
+    post.click_count += 1
+    db.session.commit()
+
+    comments = Comment.query.filter_by(post_id=post_id).all()
     isLogin = True
     return render_template('board/detail.html', comments=comments, isLogin=isLogin)
-
 
 
 @board_bp.route('/create', methods=["GET", "POST"])
