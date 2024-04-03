@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% block title %}CREATE POST{% endblock %}
 {% block head %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
 {% endblock %}
 {% block content %}
 <div class="customBody">
@@ -14,11 +14,19 @@
             <textarea name="title" id="custom_title" class="margin_right" placeholder="제목을 입력해 주세요" required></textarea>
             <div class="horizontal">
                 <div class="horizontal margin_right">
-                    <input name="secretCheck" type="checkbox" id="check1">
-                    <label for="check1" class="margin_right_2"></label>
+                    <input type="checkbox" name="secretCheck" id="check1">
+                    <label for="check1" class="marginRight16"></label>
                     비밀글
-                    <input type="hidden" name="secretValue" id="secretValue"> <!-- hidden input 추가 -->
                 </div>
+                
+                    {% if current_user.grade == 1 %}
+                    <div class="horizontal margin_right">
+                        <input type="checkbox" name="noticeCheck" id="check2">
+                        <label for="check2" class="marginRight16 marginLeft16"></label>
+                        공지글
+                    </div>
+                    {% endif %}
+                
                 <button type="submit" class="button1" onclick="submitCreatePost()">등록</button>
             </div>
         </div>
@@ -36,12 +44,6 @@
     </form>
 </div>
 <script>
-    function submitCreatePost() {
-        var checkBox = document.getElementById("check1");
-        var secretValue = checkBox.checked; // 체크박스가 체크되었는지 여부에 따라 true 또는 false 값을 가져옴
-        document.getElementById("secretValue").value = secretValue; // hidden input에 값을 설정
-        document.getElementById("createPostForm").submit();
-    }
     
     // textarea 요소와 미리보기를 표시할 요소를 가져옵니다.
     var markdownInput = document.querySelector('.markdownInput');
@@ -74,6 +76,8 @@
             markdownInput.focus(); // textarea에 포커스를 맞춥니다.
         }
     });
+    
+    
     
 </script>
 {% endblock %}

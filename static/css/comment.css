@@ -1,13 +1,16 @@
+.postTable{
+    width: 100%;
+}
 .comment-table td:nth-child(1) {
     width: 10%;
 }
 
 .comment-table td:nth-child(2) {
-    width: 60%;
+    width: 50%;
 }
 
 .comment-table td:nth-child(3) {
-    width: 30%;
+    width: 40%;
 }
 
 .comment-text-line h2 {

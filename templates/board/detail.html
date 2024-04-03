@@ -5,101 +5,221 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/turndown/7.0.0/turndown.min.js"></script>
 {% endblock %}
 
 {% block content%}
 <div class="container">
     <div class="center">
         <div class="main">
-            <div class = "title">
-                <span style="font-size: x-large;">{{post.title}}</span>
-                <span>작성자 {{post.user_id.username}}</span>
+            <div class="boardTitle">
+                <h1>{{post.title}}</h1>
+                <p>작성자 {{post.user.username}}</p>
             </div>
             <div class="mainText">
                 <div class="markdownView">{{post.body}}</div>
             </div>
-        </div>
-    </div>
-    <!--
-    ==================================================================
-                                방명록
-    ==================================================================
-    -->
-    
-        <div class="row mt-4">
-            <div class="col">
-                <div class="comment-text-line">
-                    <h3> 🍊 좋아요</h3>
-                    <h3 id="like-count"></h3>
-                    <h3>댓글</h3>
-                    <h3 id="comment-count"></h3>
-                    <h3>개</h3>
-                </div>
+        
+            <div class="comment-text-line mt-3 mb-4">
+                <h3> 🍊 좋아요 {{ comCount}} 개</h3>
             </div>
-            <table class="table postTable comment-table">
-                <tbody id="comment-table-body">
-                <tr>
-                    <td>아이디</td>
-                    <td>
-                        <div class="collapse show" id="collapse-comments-0">
-                            내용
+            
+            <div class="commentBox text-center" style="background-color: rgba(208, 239, 201, 0.317); padding: 10px 0px 10px 30px">
+                {% for com in comments %}
+                    <div class="row mt-2">
+                        <div class="col-lg-2"><b>{{com.user.username}}</b></div>
+                        <div class="col-lg-7 comments text-start"><input type="text" class="commentInput" data-comm-id="{{ com.comment_id }}" style="border: none; background-color: transparent;" value="{{com.comments}}" readonly></div>
+                        <div class="col-lg-1 createTime" data-created-at="{{com.created_at}}"></div>
+                        <div class="col-lg-2">
+                            <button class="btn btn-sm btn-request">✏️</button>
+                            <button class="btn btn-sm btn-request" data-comm-id="{{ com.comment_id }}">❌</button>
                         </div>
-                        <div class="collapse" id="collapse-comments-0">
-                            <form>
-                                <textarea id="update-comment-text" class="form-control" rows="3"></textarea>
-                                <input type="hidden" id="update-comment-id" value="1">
-                                <button type="submit" class="btn btn-primary comment-update-btn">수정 완료</button>
-                            </form>
-                        </div>
-                    </td>
-                    <td>
-                        날짜
-                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapse-comments-0">
-                            수정
-                        </button>
-                        <button class="btn btn-primary" type="button">
-                            삭제
-                        </button>
-                    </td>
-                </tr>
-                <!--
-                여기에 방명록 데이터가 추가됩니다.
-                -->
-                </tbody>
-            </table>
-            {% if current_user.is_authenticated %}
-            <div class="row">
-                <form id="comment-form">
-                    <div class="col-11">
-                        <textarea id="text-comments" class="form-control" rows="3" placeholder="남기실 말씀을 적어주세요."
-                                name="comments"></textarea>
                     </div>
-                    <div class="col">
-                        <button id="btn-register" type="submit" class="btn btn-primary mt-2">등록</button>
+                {% endfor %}
+            </div>
+            
+            {% if current_user.is_authenticated %}
+                <form id="comment-form" action="{{url_for('board.add_comment')}}" method="post">
+                    <div class="row mt-4">
+                        <div class="col-11">
+                            <input type="hidden" name="postId" value="{{ post.post_id }}">
+                            <textarea id="text-comments" class="form-control" rows="3" placeholder="남기실 말씀을 적어주세요."
+                                name="comments"></textarea>
+                        </div>
+                        <div class="col-1">
+                            <button id="btn-register" type="submit" class="btn btn-theme-color mt-2">등록</button>
+                        </div>
                     </div>
                 </form>
-            </div>
             {% endif %}
+            
         </div>
     </div>
 </div>
-<script src="{{ url_for('static', filename='js/comment.js') }}"></script>
 <script>
-    const post_id = {{ post.post_id }}
-    addEventListenersToElements(post_id);
-    refreshCommentList(post_id);
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // .markdownView 요소를 선택합니다.
-        var markdownView = document.querySelector('.markdownView');
     
-        // 마크다운으로 처리할 내용입니다.
-        var markdownContent = markdownView.textContent;
-
-        // 마크다운을 HTML로 변환하여 .markdownView에 삽입합니다.
+    document.addEventListener('DOMContentLoaded', function() {
+        const markdownView = document.querySelector('.markdownView');
+        const markdownContent = markdownView.textContent;
         markdownView.innerHTML = marked(markdownContent);
     });
+
+    function timeSince(date) {
+        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+        let interval = Math.floor(seconds / 31536000);
+
+        if (interval >= 1) {
+            return interval + " 년 전";
+        }
+        interval = Math.floor(seconds / 2592000);
+        if (interval >= 1) {
+            return interval + " 개월 전";
+        }
+        interval = Math.floor(seconds / 86400);
+        if (interval >= 1) {
+            return interval + " 일 전";
+        }
+        interval = Math.floor(seconds / 3600);
+        if (interval >= 1) {
+            return interval + " 시간 전";
+        }
+        interval = Math.floor(seconds / 60);
+        if (interval >= 1) {
+            return interval + " 분 전";
+        }
+        return Math.floor(seconds) + " 초 전";
+    }
+
+    // 모든 createTime 클래스를 가진 요소를 가져와서 시간을 설정합니다.
+    const createTimeElements = document.querySelectorAll('.createTime');
+    createTimeElements.forEach(function(element) {
+        const createdTime = element.getAttribute('data-created-at');
+        element.innerText = timeSince(createdTime);
+    });
+
+    // 수정 버튼을 클릭했을 때 실행되는 함수
+    function activateEditField(button) {
+        // 버튼을 클릭한 부모 요소인 수정 칸을 찾습니다.
+        var editField = button.closest('.row').querySelector('.commentInput');
+        
+        editField.removeAttribute('readonly');
+        editField.focus();
+        editField.setSelectionRange(editField.value.length, editField.value.length);
+
+        // 연필 아이콘을 체크 아이콘으로 변경합니다.
+        button.innerHTML = '✅';
+    }
+
+    // 체크박스가 아닌 수정 버튼을 클릭했을 때 실행되는 함수
+    function handleEditButtonClick(button) {
+        // 댓글 데이터를 가져옵니다.
+        var selectInput = button.closest('.row').querySelector('.commentInput');
+        var commentData = selectInput.value;
+        var commentNo = selectInput.getAttribute('data-comm-id');
+
+        fetch("/board/update_comment", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                commentNo: commentNo,
+                commentData: commentData
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // 서버 응답에 따른 처리를 수행합니다.
+            location.reload();
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+
+        // 요청을 보내는 대신 콘솔에 댓글 데이터를 출력합니다.
+        console.log('댓글 데이터:', commentData, commentNo);
+    }
+
+    function removeData(button){
+        removeId = button.getAttribute('data-comm-id');
+        fetch("/board/delete_comment", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                removeId: removeId
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // 서버 응답에 따른 처리를 수행합니다.
+            location.reload();
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+    }
+
+    // 모든 수정 버튼에 클릭 이벤트 리스너를 추가합니다.
+    var editButtons = document.querySelectorAll('.btn-request');
+    editButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            if(button.innerHTML == "❌"){
+                removeData(button);
+            }else if(button.innerHTML == "✅"){
+                handleEditButtonClick(button);
+            }else{
+                activateEditField(button);
+            }
+        });
+    });
+
+    // Enter 키를 눌렀을 때 실행되는 함수
+    function handleEnterKey(event) {
+        if (event.keyCode === 13) {
+            // 현재 이벤트가 발생한 요소를 찾습니다.
+            var currentElement = event.target;
+
+            // 체크박스가 아니고 수정 버튼인 경우에만 처리합니다.
+            if (currentElement.classList.contains('commentInput')) {
+                handleEditButtonClick(currentElement);
+            }
+        }
+    }
+
+    // 모든 입력란에 keydown 이벤트 리스너를 추가합니다.
+    var inputFields = document.querySelectorAll('.commentInput');
+    inputFields.forEach(function(input) {
+        input.addEventListener('keydown', handleEnterKey);
+    });
+
+    // 페이지 로드 이벤트가 발생했을 때 실행되는 함수
+    window.onload = function() {
+        // 이전에 저장한 스크롤 위치를 가져옵니다.
+        var scrollPosition = sessionStorage.getItem('scrollPosition');
+
+        // 이전 스크롤 위치가 존재하는 경우에만 스크롤을 이동합니다.
+        if (scrollPosition) {
+            window.scrollTo(0, scrollPosition);
+        }
+    };
+
+    // 페이지 unload 이벤트가 발생했을 때 실행되는 함수
+    window.onbeforeunload = function() {
+        // 현재 스크롤 위치를 저장합니다.
+        sessionStorage.setItem('scrollPosition', window.scrollY);
+    };
 </script>
 
 {% endblock %}
