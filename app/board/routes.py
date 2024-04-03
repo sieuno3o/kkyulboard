@@ -85,7 +85,8 @@ def createPost():
         click_count = 0
         like_count = 0
 
-        post = Post(title=title, body=body, problem_url=problemUrl, secret_mode=secret_bool, user_id=user_id, status=status,
+        post = Post(title=title, body=body, problem_url=problemUrl, secret_mode=secret_bool, user_id=user_id,
+                    status=status,
                     created_at=created_at, updated_at=updated_at, click_count=click_count, like_count=like_count)
         db.session.add(post)
         db.session.commit()
@@ -144,7 +145,8 @@ def get_comments():
         currentUserId = current_user.user_id
 
     return jsonify(
-        [{'username': comment.user.username, 'comments': comment.comments,
+        [{'comment_id': comment.comment_id,
+          'username': comment.user.username, 'comments': comment.comments,
           'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
           'is_login': current_user.is_authenticated, 'user_id': comment.user_id, 'current_user_id': currentUserId} for
          comment
@@ -153,7 +155,7 @@ def get_comments():
 
 
 @board_bp.route('/add_comment', methods=['POST'])
-def add_comments():
+def add_comment():
     comments = request.form.get('comments')
     postId = request.form.get('post_id')
     userId = current_user.user_id
@@ -167,8 +169,20 @@ def add_comments():
     db.session.add(comment)
     db.session.commit()
 
-    return jsonify({'username': comment.user.username, 'comments': comment.comments, 'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
+    return jsonify({'comment_id': comment.comment_id,
+                    'username': comment.user.username, 'comments': comment.comments,
+                    'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
                     'is_login': current_user.is_authenticated})
+
+
+@board_bp.route('/delete_comment/<int:comment_id>', methods=['DELETE'])
+def delete_comment(comment_id):
+    comment = Comment.query.filter(Comment.comment_id == comment_id).first()
+    if comment:
+        db.session.delete(comment)
+        db.session.commit()
+
+    return jsonify({'message': 'Comment deleted successfully'})
 
 
 @board_bp.route('/test_data', methods=['POST'])

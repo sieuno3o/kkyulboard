@@ -90,6 +90,43 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- 삭제 Modal 인터페이스 -->
+    <div class="modal fade" id="delete-comment-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">삭제하실건가요?</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">유저</label>
+                            <input type="text" class="form-control" id="exampleInputEmail1"
+                                   aria-describedby="emailHelp">
+                            <div class="form-text">등록하시는 사용자 이름을 넣어주세요.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">노래 제목</label>
+                            <input type="text" class="form-control" id="exampleInputEmail1"
+                                   aria-describedby="emailHelp">
+                            <div class="form-text">좋아하는 노래 제목을 넣어주세요.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputPassword1" class="form-label">가수</label>
+                            <input type="text" class="form-control" id="exampleInputPassword1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputPassword1" class="form-label">앨범 커버URL</label>
+                            <input type="text" class="form-control" id="exampleInputPassword1">
+                        </div>
+                        <button type="submit" class="btn btn-danger">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
     let post_id = {{ post.post_id }}
@@ -105,25 +142,36 @@
         return btn
     }
 
+    // 모달 표시 함수 정의
+    function showModal() {
+        // 모달 요소 선택
+        var modal = document.getElementById('delete-comment-modal');
+
+        // 모달 보이기
+        var modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+    }
+
     function refreshCommentList() {
         fetch(`/board/get_comments?post_id=${post_id}`)
             .then(response => response.json())
             .then(comments => {
-                {# 댓글 입력창 clear #}
-                const textComments = document.getElementById('text-comments')
-                textComments.value = ''
-
                 const commentCountText = document.getElementById('comment-count');
                 commentCountText.innerHTML = comments.length
 
                 const tbody = document.getElementById('comment-table-body');
                 tbody.innerHTML = '';
 
+                {# 댓글 입력창 clear #}
+                const textComments = document.getElementById('text-comments')
+                if (textComments) {
+                    textComments.value = '';
+                }
                 let idx = 0
                 comments.forEach(comment => {
-                    console.log(`name=${comment.username}, comments=${comment.comments}, updated_at=${comment.updated_at}
-                    login = ${comment.is_login}, cur user id=${comment.current_user_id} comment id=${comment.user_id}
-                    `)
+                    console.log('hello')
+                    {#console.log(`comment id=${comment.comment_id}, name=${comment.username}, comments=${comment.comments}, updated_at=${comment.updated_at}#}
+                    {#login = ${comment.is_login}, cur user id=${comment.current_user_id}, user id=${comment.user_id}`)#}
                     const tr = document.createElement('tr');
                     const tdUserName = document.createElement('td');
                     const tdComments = document.createElement('td');
@@ -134,11 +182,30 @@
                     tdUpdateDate.textContent = comment.updated_at;
 
                     if(comment.is_login && (comment.current_user_id === comment.user_id)) {
-                        const btnUpdate= createButton('수정', `btn-update-comment${idx}`)
-                        const btnDelete= createButton('삭제', `btn-delete-comment${idx}`)
+                        const updateBtnId = `btn-update-comment${idx}`
+                        const deleteBtnId = `btn-delete-comment${idx}`
+                        const btnUpdate= createButton('수정', updateBtnId)
+                        const btnDelete= createButton('삭제', deleteBtnId)
 
                         tdUpdateDate.appendChild(btnUpdate)
                         tdUpdateDate.appendChild(btnDelete)
+
+                        btnDelete.addEventListener('click', function () {
+                            const result = confirm('댓글을 삭제하시겠습니까?');
+                            if (result) {
+                                fetch(`/board/delete_comment/${comment.comment_id}`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({comment_id: comment.comment_id})
+                                })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        refreshCommentList();
+                                    })
+                            }
+                        });
                     }
 
                     tr.appendChild(tdUserName);
