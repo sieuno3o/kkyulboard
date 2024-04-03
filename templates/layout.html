@@ -40,9 +40,9 @@
     <div class="alertcon">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-        {% for message in messages %}
-        <div id="alert" class="alert alert-{{ message[0]}} alert-dismissible fade show customAlert" role="alert">
-            {{ message[1] }}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} customAlert" role="alert">
+            {{ message }}
         </div>
         {% endfor %}
         {% endif %}
@@ -55,23 +55,35 @@
     </div>
 
 </body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
-    </script>
+
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
 <script>
     // 3초 후에 알림 창을 숨기는 함수
     function hideAlert() {
-        var alertBox = document.getElementById("alert");
-        alertBox.classList.add("fade-out"); // fade-out 클래스 추가하여 투명도를 조정하여 숨김
-        setTimeout(function () {
-            alertBox.style.display = "none"; // display 속성을 none으로 변경하여 숨김
-        }, 1000); // 1초 후에 숨김 처리
+        var alerts = document.querySelectorAll(".customAlert");
+        alerts.forEach(function (alertBox) {
+            alertBox.classList.add("fade-out"); // fade-out 클래스 추가하여 투명도를 조정하여 숨김
+            setTimeout(function () {
+                alertBox.style.display = "none"; // display 속성을 none으로 변경하여 숨김
+            }, 1000); // 1초 후에 숨김 처리
+        });
     }
 
-    // 페이지 로드 후 3초 후에 hideAlert 함수 호출
+    // 페이지 로드 후 1.5초 후에 hideAlert 함수 호출
     window.onload = function () {
-        setTimeout(hideAlert, 2000); // 3초 후에 hideAlert 함수 호출
+        setTimeout(hideAlert, 1500); // 1.5초 후에 hideAlert 함수 호출
     };
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+        let alerts = document.querySelectorAll('.customAlert');
+        let alertOffset = 65; // 시작 위치(%)
+        let alertSpacing = 5; // alert 간 간격(%)
+
+        alerts.forEach((alert, index) => {
+            let newTop = alertOffset + (alertSpacing * index);
+            alert.style.top = `calc(${newTop}% + ${index * 2}rem)`; // rem 단위로 추가 간격 조정
+        });
+    });
 </script>
 
 </html>
