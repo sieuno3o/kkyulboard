@@ -2,6 +2,10 @@
 {% block title %}CREATE POST{% endblock %}
 {% block head %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 {% endblock %}
 {% block content %}
 <div class="customBody">
@@ -21,7 +25,14 @@
         <div>
             <textarea name="problemUrl" id="custom_url" placeholder="문제 URL을 입력해 주세요"></textarea>
         </div>
-        <textarea name="body" id="custom_contents" placeholder="내용을 입력해 주세요" required></textarea>
+        <div class="row">
+            <div class="col-lg-6">
+                <textarea name="body" id="custom_contents" class="markdownInput" placeholder="내용을 입력해 주세요" required></textarea>
+            </div>
+            <div class="col-lg-6">
+                <div class="markdownPreview"></div>
+            </div>
+        </div>
     </form>
 </div>
 <script>
@@ -31,5 +42,38 @@
         document.getElementById("secretValue").value = secretValue; // hidden input에 값을 설정
         document.getElementById("createPostForm").submit();
     }
+    
+    // textarea 요소와 미리보기를 표시할 요소를 가져옵니다.
+    var markdownInput = document.querySelector('.markdownInput');
+    var markdownPreview = document.querySelector('.markdownPreview');
+
+    // textarea에 입력 내용이 변경될 때마다 미리보기를 업데이트합니다.
+    markdownInput.addEventListener('input', function() {
+        // 입력된 마크다운 텍스트를 가져와서 HTML로 변환하여 미리보기 요소에 적용합니다.
+        markdownPreview.innerHTML = marked(markdownInput.value);
+        markdownPreview.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+        });
+    });
+
+    // 사용자가 엔터를 입력하면 미리보기를 업데이트합니다.
+    markdownInput.addEventListener('keydown', function(event) {
+        if (event.keyCode === 13) {
+            // Enter 키를 누르면 입력 내용이 변경되므로 input 이벤트를 발생시켜 미리보기를 업데이트합니다.
+            var inputEvent = new Event('input');
+            console.log(1);
+            markdownInput.dispatchEvent(inputEvent);
+        }else if(event.keyCode === 9) {
+            event.preventDefault(); // 기본 동작(탭 이동)을 막습니다.
+            var cursorPos = markdownInput.selectionStart; // 커서의 위치를 가져옵니다.
+            var textBeforeCursor = markdownInput.value.substring(0, cursorPos); // 커서 앞의 텍스트를 가져옵니다.
+            var textAfterCursor = markdownInput.value.substring(cursorPos); // 커서 뒤의 텍스트를 가져옵니다.
+            markdownInput.value = textBeforeCursor + '\t' + textAfterCursor; // 탭 문자를 삽입합니다.
+            markdownInput.selectionStart = cursorPos + 1; // 커서를 이동합니다.
+            markdownInput.selectionEnd = cursorPos + 1;
+            markdownInput.focus(); // textarea에 포커스를 맞춥니다.
+        }
+    });
+    
 </script>
 {% endblock %}
