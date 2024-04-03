@@ -6,7 +6,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/turndown/7.0.0/turndown.min.js"></script>
 {% endblock %}
 
 {% block content%}
@@ -16,12 +15,10 @@
             <div class="boardTitle">
                 <h1>{{post.title}}</h1>
                 <p>작성자 {{post.user.username}}</p>
-
             </div>
             <div class="detail-mainText">
                 <div class="markdownView">{{post.body}}</div>
             </div>
-
         
             <div class="comment-text-line mt-3 mb-4">
                 <h3> 🍊 좋아요 {{ comCount}} 개</h3>
