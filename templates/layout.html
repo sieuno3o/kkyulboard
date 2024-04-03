@@ -12,14 +12,22 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/board.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/comment.css') }}">
     <style>
-
-
+        *{
+            cursor: none;
+        }
+        .cursor {
+            position: fixed;
+            width: 32px; /* 커서 이미지의 너비 */
+            height: 32px; /* 커서 이미지의 높이 */
+            background-image: url('{{ url_for("static", filename="star.gif") }}'); /* 커서 이미지 경로 */
+            background-size: cover;
+            pointer-events: none; /* 커서를 클릭 가능하게 만들지 않음 */
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
-
     <nav id="Nav">
         <div class="navContainer">
             <a class="navLogo" href="{{ url_for('board.index') }}">
@@ -56,7 +64,9 @@
         {% endif %}
         {% endwith %}
     </div>
-
+    <div class="cursor">
+        adsfsdfkljkljkl
+    </div>
 </body>
 
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
