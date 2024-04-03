@@ -1,0 +1,21 @@
+.comment-table td:nth-child(1) {
+    width: 10%;
+}
+
+.comment-table td:nth-child(2) {
+    width: 60%;
+}
+
+.comment-table td:nth-child(3) {
+    width: 30%;
+}
+
+.comment-text-line h2 {
+    font-size: 18px;
+    display: inline;
+}
+
+.comment-text-line h3 {
+    font-size: 20px;
+    display: inline;
+}
