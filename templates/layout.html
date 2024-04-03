@@ -39,6 +39,15 @@
 
     <div class="alertcon">
         {% with messages = get_flashed_messages(with_categories=true) %}
+<<<<<<< HEAD
+            {% if messages %}
+                <div id="alert" class="alert alert-info alert-dismissible fade show" role="alert">
+                    {% for message in messages %}
+                        <li>{{ message[1] }}</li>
+                    {% endfor %}
+                </div>
+            {% endif %}
+=======
         {% if messages %}
         {% for message in messages %}
         <div id="alert" class="alert alert-{{ message[0]}} alert-dismissible fade show customAlert" role="alert">
@@ -46,6 +55,7 @@
         </div>
         {% endfor %}
         {% endif %}
+>>>>>>> main
         {% endwith %}
     </div>
 
@@ -55,9 +65,13 @@
     </div>
 
 </body>
+<<<<<<< HEAD
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
+=======
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
     </script>
+>>>>>>> main
 <script>
     // 3초 후에 알림 창을 숨기는 함수
     function hideAlert() {

@@ -45,7 +45,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.is_duplicate) {
+                if (data.isDuplicate) {
                     usernameState.innerHTML = "사용중인 아이디입니다.";
                     usernameBool = false;
                 } else {
@@ -75,7 +75,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.is_duplicate) {
+                if (data.isDuplicate) {
                     usermailState.innerHTML = "이미 가입된 이메일입니다.";
                     usermailBool = false;
                 } else {
@@ -85,6 +85,8 @@
             })
             .catch(error => console.error('Error:', error));
         }
+        const passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+        passwordModal.hide();
     });
 
     function signupCheck() {
@@ -102,5 +104,17 @@
             document.getElementById("signupForm").submit();
         }
     }
+        // 패스워드 입력란에서 Enter 키 입력 감지
+    document.getElementById('passwordInput').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // 기본 동작 방지
+            validatePassword(); // 패스워드 확인 함수 호출
+        }
+    });
+
+    // 확인 버튼 클릭 이벤트 처리
+    document.querySelector('.modal-footer .btn-primary').addEventListener('click', function() {
+        validatePassword(); // 패스워드 확인 함수 호출
+    });
     </script>
 {% endblock %}

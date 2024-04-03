@@ -5,10 +5,12 @@ from .board.routes import board_bp
 from .utils import read_from_json
 from flask_login import LoginManager
 import os
+from flask_cors import CORS
 
 
 def create_app():
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
+    CORS(app)
     app.secret_key = read_from_json('secret.json')["SECRETKEY"]
 
     # app.config['UPLOAD_FOLDER'] = 'uploads'
