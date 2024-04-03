@@ -29,7 +29,9 @@ def index():
     except:
         return redirect(url_for('board.index'))
 
-    stIdx = (pag.page - 1) * pag.per_page + 1
+    # stIdx = (pag.page - 1) * pag.per_page + 1
+
+    stIdx = pag.total - (pag.page - 1) * pag.per_page
     postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
 
     isLogin = current_user.is_authenticated
@@ -156,7 +158,7 @@ def test_data():
     except:
         return redirect(url_for('board.index'))
 
-    stIdx = (pag.page - 1) * pag.per_page + 1
+    stIdx = pag.total - (pag.page - 1) * pag.per_page
     postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
 
     isLogin = current_user.is_authenticated

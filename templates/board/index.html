@@ -51,7 +51,7 @@
                 <tbody>
                 {% for post in pag.items %}
                     <tr>
-                        <td style="text-align: center;">{{ stIdx + loop.index0 }}</td>
+                        <td style="text-align: center;">{{ stIdx - loop.index0 }}</td>
                         <td><a class="board-td-custom" href="{{ url_for('board.detail', post_id=post.post_id)}}">{{ post.title }}</a></td>
                         <td style="text-align: center;">{{ post.user.username }}</td>
                         <td style="text-align: center;">{{ post.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
