@@ -13897,6 +13897,7 @@ fieldset:disabled .btn {
     position: fixed;
     top: 0;
     width: 100%;
+    height: 70.39px;
     background: #FAC17E;
     padding: 16px;
 }
@@ -14095,7 +14096,7 @@ button.buttonDanger {
     border: 0;
     outline: none;
     font-size: 16px;
-    background: rgba(255, 92, 92, 0.9);
+    background: #FF6E80;
     color: white;
     padding-top: 8px;
     padding-bottom: 8px;
@@ -14109,7 +14110,7 @@ button.buttonGreen {
     border: 0;
     outline: none;
     font-size: 16px;
-    background: #AED7C6;
+    background: #5EB475;
     color: white;
     padding-top: 8px;
     padding-bottom: 8px;
@@ -14141,7 +14142,6 @@ a.button3 {
 
 .customAlert {
     position: fixed;
-    top: 65%;
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 20px;
@@ -14206,5 +14206,52 @@ a.button3 {
     outline: none;
     /* 선택 테두리 제거 */
 }
+
+.navbarLogo {
+    width: 32px;
+    height: 32px;
+}
+
+body {
+    background-color: rgba(250, 193, 126, 0.1)
+}
+
+.customBody {
+    margin-top: 70.39px;
+}
+
+.textOrange {
+    color: #FFA93F;
+}
+
+.textGreen {
+    color: #5EB475;
+}
+
+.textBlack {
+    color: #222222;
+}
+
+.textWhite {
+    color: #FFFFFF;
+}
+
+.textRed {
+    color: #FF6E80;
+}
+
+.textGray {
+    color: #5C5C5C;
+}
+
+.logoImage {
+    width: 300px;
+    height: 300px;
+}
+
+.buttonSimple {
+    text-decoration: underline;
+}
+
 
 /*# sourceMappingURL=bootstrap.min.css.map */

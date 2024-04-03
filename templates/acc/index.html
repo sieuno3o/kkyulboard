@@ -1,8 +1,22 @@
 {% extends "layout.html" %}
 {% block title %}Index{% endblock %}
 {% block head %}
-
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
 {% endblock %}
 {% block content %}
-hello acc
+<div class="vertical customBody">
+    <h1 class="textOrange margin_bottom">
+        나는야 코딩의 신 뀰
+    </h1>
+    <img src="/static/kkyul.png" alt="🍊" class="logoImage margin_bottom">
+    <a class="textGreen buttonSimple margin_bottom" href="{{ url_for('board.index') }}">
+        <h3>뀰코드 모아보기</h3>
+    </a>
+    {% if not current_user.is_authenticated %}
+    <h6 class="textGray">😱 어머! 아직 로그인도 안했다뀰?</h6>
+    <h6 class="textGray">
+        얼른 <a class="textRed buttonSimple" href="{{ url_for('acc.login') }}">로그인</a>부터!!
+    </h6>
+    {% endif %}
+</div>
 {% endblock %}

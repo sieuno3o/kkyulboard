@@ -22,7 +22,10 @@
 
     <nav id="Nav">
         <div class="navContainer">
-            <a class="navLogo" href="{{ url_for('board.index') }}">🍊 뀰보드</a>
+            <a class="navLogo" href="{{ url_for('board.index') }}">
+                <img class="navbarLogo" src="/static/kkyul.png" alt="🍊">
+                뀰보드
+            </a>
             <div>
                 <a href="{{ url_for('board.index') }}" class="btn navBtn">게시판</a>
                 <!-- logined user -->
@@ -37,6 +40,11 @@
         </div>
     </nav>
 
+    <div class="customBody">
+        {% block content %}
+        {% endblock %}
+    </div>
+
     <div class="alertcon">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -47,11 +55,6 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
-    </div>
-
-    <div class="content">
-        {% block content %}
-        {% endblock %}
     </div>
 
 </body>
@@ -76,7 +79,7 @@
 
     window.addEventListener('DOMContentLoaded', (event) => {
         let alerts = document.querySelectorAll('.customAlert');
-        let alertOffset = 65; // 시작 위치(%)
+        let alertOffset = 15; // 시작 위치(%)
         let alertSpacing = 5; // alert 간 간격(%)
 
         alerts.forEach((alert, index) => {

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify, session
 from ..utils import sha512_hash
 from ..database import User, db
 from datetime import datetime
@@ -28,7 +28,7 @@ def login():
             if user.password == sha512_hash(userpass):
                 flash('환영합니다!', 'success')
                 login_user(user)
-                return redirect(url_for('acc.index'))
+                return redirect(session.get('prev_url') or url_for('acc.index'))
             else:
                 flash('아이디나 패스워드를 확인해 주세요!', 'danger')
         else:
@@ -38,8 +38,10 @@ def login():
 
 @acc_bp.route("/logout")
 def logout():
+    # 이전 페이지의 URL을 세션에 저장
+    session['prev_url'] = request.referrer
     logout_user()
-    return redirect(url_for('acc.index'))
+    return redirect(session.get('prev_url') or url_for('acc.index'))
 
 
 @acc_bp.route('/signup', methods=["GET", "POST"])
