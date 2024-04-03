@@ -12,7 +12,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String)
     email = db.Column(db.String, unique=True)
-    grade = db.Column(db.String, default=0)
+    grade = db.Column(db.Integer, default=0)
     userpic = db.Column(db.String)
     comment = db.Column(db.String)
     created_at = db.Column(db.DateTime, default=datetime.now)

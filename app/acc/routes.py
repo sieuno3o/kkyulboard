@@ -54,7 +54,6 @@ def signup():
 
         if not request.files.get("regPic"):
             filePath = ""
-            print(1)
         else:
             userpic = request.files['regPic']
             ext = userpic.filename.split(".")[-1]
@@ -66,6 +65,7 @@ def signup():
                     email=email, userpic=filePath, comment=comment)
         db.session.add(user)
         db.session.commit()
+        flash("축하합니다! 가입되었습니다", "info")
         return redirect(url_for('acc.login'))
     return render_template('acc/signup.html')
 
@@ -102,7 +102,6 @@ def updateUser():
     if newComm != current_user.comment:
         current_user.comment = newComm
         flash("자기소개글이 업데이트 되었습니다", "info")
-        print('자기소개글 업뎃')
         changeData = True
 
     newPass = request.form.get("changePass")

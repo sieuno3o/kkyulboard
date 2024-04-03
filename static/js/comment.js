@@ -34,6 +34,7 @@ function refreshCommentList(postId) {
 
                 // comments
                 const tdComments = document.createElement('td');
+                tdComments.setAttribute("class", "modSpace")
 
                 // div content
                 const divContent = document.createElement('div')
