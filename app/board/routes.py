@@ -100,12 +100,12 @@ def editPost(post_id):
 
     # 게시글이 존재하지 않으면 메인 페이지로 리디렉션
     if not post:
-        flash("해당 게시글을 찾을 수 없습니다.", "error")
+        flash("해당 게시글을 찾을 수 없습니다.", 'danger')
         return redirect(url_for('board.index'))
 
     # 현재 로그인한 사용자가 게시글의 작성자가 아니면 메인 페이지로 리디렉션
     if post.user_id != current_user.user_id:
-        flash("수정 권한이 없습니다.", "error")
+        flash("수정 권한이 없습니다.", 'danger')
         return redirect(url_for('board.index'))
 
     if request.method == "POST":
