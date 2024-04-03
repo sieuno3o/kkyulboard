@@ -9,26 +9,33 @@ board_bp = Blueprint('board', __name__, url_prefix='/board')
 
 @board_bp.route('/index')
 def index():
+    cate = request.args.get('cate', "", type=str)
+    keyword = request.args.get('keyword', "", type=str)
     page = request.args.get('page', 1, type=int)
     sort = request.args.get('sort', 'recent', type=str)
 
     perPage = 20
 
-    # 사용자의 불순한 값 대비 코드
-    try:
-        if sort == 'old':
-            pag = Post.query.order_by(Post.created_at.asc()).paginate(
-                page=page, per_page=perPage)
-        elif sort == 'recent':
-            pag = Post.query.order_by(Post.created_at.desc()).paginate(
-                page=page, per_page=perPage)
-        elif sort == 'click':
-            pag = Post.query.order_by(Post.click_count.desc()).paginate(
-                page=page, per_page=perPage)
+    if keyword:
+        if cate == "title":
+            posts_query = Post.query.filter(Post.title.like(f"%{keyword}%"))
+        elif cate == "writer":
+            posts_query = Post.query.join(User).filter(User.username == keyword)
+        elif cate == "content":
+            posts_query = Post.query.filter(Post.body.like(f"%{keyword}%"))
         else:
-            pag = Post.query.paginate(page=page, per_page=perPage)
-    except:
-        return redirect(url_for('board.index'))
+            posts_query = Post.query
+    else:
+        posts_query = Post.query
+
+    if sort == 'old':
+        posts_query = posts_query.order_by(Post.created_at.asc())
+    elif sort == 'recent':
+        posts_query = posts_query.order_by(Post.created_at.desc())
+    elif sort == 'click':
+        posts_query = posts_query.order_by(Post.click_count.desc())
+
+    pag = posts_query.paginate(page=page, per_page=perPage)
 
     # stIdx = (pag.page - 1) * pag.per_page + 1
 
@@ -36,7 +43,7 @@ def index():
     postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
 
     isLogin = current_user.is_authenticated
-    return render_template('board/index.html', pag=pag, postsCount=postsCount, stIdx=stIdx, sort=sort, isLogin=isLogin)
+    return render_template('board/index.html', pag=pag, postsCount=postsCount, keyword=keyword, cate=cate, stIdx=stIdx, sort=sort, isLogin=isLogin)
 
 
 @board_bp.route('/detail')
@@ -53,9 +60,15 @@ def detail():
 def render_detail(post_id):
     post = Post.query.filter_by(post_id=post_id).first()
 
+    if post.secret_mode:
+        if not (post.user_id == current_user.user_id or current_user.grade):
+            flash("접근 권한이 없습니다!", "info")
+            print(post.user_id, current_user.user_id)
+            return redirect(request.referrer)
     # post_id에 해당하는 데이터가 없으면 index로 redirect
     if not post:
-        return redirect(url_for('board.index'))
+        flash("게시글이 존재하지 않습니다!", "info")
+        return redirect(request.referrer)
 
     # click 카운트 추가
     post.click_count += 1
