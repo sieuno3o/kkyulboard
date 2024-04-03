@@ -1,0 +1,49 @@
+.detail-main {
+    padding: 50px 80px;
+    width: 100%;
+    display: block;
+}
+
+.detail-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    padding-bottom: 10px;
+    border-bottom: 4px solid #fabe57;
+}
+
+.detail-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.detail-mainText {
+    padding: 30px;
+}
+
+.row {
+    width: 90%;
+}
+
+.custom-row {
+    margin-right: 0;
+    padding-right: 0;
+}
+
+.comment-text-line {
+    margin-bottom: 15px;
+}
+
+.detail-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.detail-comment {
+    width: 85%;
+    margin: 0 auto;
+    display: block;
+}
