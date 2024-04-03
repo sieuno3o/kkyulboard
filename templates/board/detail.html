@@ -101,6 +101,16 @@
     let post_id = {{ post.post_id }}
     refreshCommentList();
 
+    function createButton(text, id) {
+        const btn = document.createElement('button');
+        btn.id = id;
+        btn.type = 'submit';
+        btn.classList.add('btn');
+        btn.classList.add('btn-primary');
+        btn.textContent = text;
+        return btn
+    }
+
     function refreshCommentList() {
         fetch(`/board/get_comments?post_id=${post_id}`)
             .then(response => response.json())
@@ -128,19 +138,8 @@
                     tdUpdateDate.textContent = comment.updated_at;
 
                     if(comment.is_login) {
-                        const btnUpdate = document.createElement('button');
-                        btnUpdate.id = `btn-update-comment${idx}`
-                        btnUpdate.type = 'submit'
-                        btnUpdate.classList.add('btn')
-                        btnUpdate.classList.add('btn-primary')
-                        btnUpdate.textContent = '수정'
-
-                        const btnDelete = document.createElement('button');
-                        btnDelete.id = `btn-delete-comment${idx}`
-                        btnDelete.type = 'submit'
-                        btnDelete.classList.add('btn')
-                        btnDelete.classList.add('btn-primary')
-                        btnDelete.textContent = '삭제'
+                        const btnUpdate= createButton('수정', `btn-update-comment${idx}`)
+                        const btnDelete= createButton('삭제', `btn-delete-comment${idx}`)
 
                         tdUpdateDate.appendChild(btnUpdate)
                         tdUpdateDate.appendChild(btnDelete)
