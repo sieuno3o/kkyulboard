@@ -73,18 +73,11 @@
                 <!--
                 여기에 방명록 데이터가 추가됩니다.
                 -->
-                <tr>
-                    <td>이름</td>
-                    <td>코멘트</td>
-                    <td>날짜
-                        <button id="btn-update-comment" type="submit" class="btn btn-primary mt-2">수정</button>
-                        <button id="btn-delete-comment" type="submit" class="btn btn-primary mt-2">삭제</button>
-                    </td>
-                </tr>
                 </tbody>
             </table>
+            {% if current_user.is_authenticated %}
             <div class="row">
-                <form id="comment-form" class="book" >
+                <form id="comment-form">
                     <div class="col-11">
                         <textarea id="text-comments" class="form-control" rows="3" placeholder="남기실 말씀을 적어주세요."
                                   name="comments"></textarea>
@@ -94,6 +87,7 @@
                     </div>
                 </form>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -127,7 +121,9 @@
 
                 let idx = 0
                 comments.forEach(comment => {
-                    {#console.log(`name=${comment.username}, comments=${comment.comments}, updated_at=${comment.updated_at}`)#}
+                    console.log(`name=${comment.username}, comments=${comment.comments}, updated_at=${comment.updated_at}
+                    login = ${comment.is_login}, cur user id=${comment.current_user_id} comment id=${comment.user_id}
+                    `)
                     const tr = document.createElement('tr');
                     const tdUserName = document.createElement('td');
                     const tdComments = document.createElement('td');
@@ -137,7 +133,7 @@
                     tdComments.textContent = comment.comments;
                     tdUpdateDate.textContent = comment.updated_at;
 
-                    if(comment.is_login) {
+                    if(comment.is_login && (comment.current_user_id === comment.user_id)) {
                         const btnUpdate= createButton('수정', `btn-update-comment${idx}`)
                         const btnDelete= createButton('삭제', `btn-delete-comment${idx}`)
 

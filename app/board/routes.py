@@ -47,6 +47,7 @@ def detail():
     else:
         return redirect(url_for('board.index'))
 
+
 @board_bp.route('/detail/<post_id>')
 def render_detail(post_id):
     post = Post.query.filter_by(post_id=post_id).first()
@@ -77,7 +78,8 @@ def createPost():
         updated_at = datetime.now()
         click_count = 0
         like_count = 0
-        post = Post(title=title, body=body, problem_url=problemUrl, secret_mode=secret_bool, user_id=user_id, status=status,
+        post = Post(title=title, body=body, problem_url=problemUrl, secret_mode=secret_bool, user_id=user_id,
+                    status=status,
                     created_at=created_at, updated_at=updated_at, click_count=click_count, like_count=like_count)
         db.session.add(post)
         db.session.commit()
@@ -93,9 +95,15 @@ def get_comments():
         return redirect(url_for('board.index'))
 
     comments = Comment.query.filter_by(post_id=post_id)
+    currentUserId = -1
+    if current_user.is_authenticated:
+        currentUserId = current_user.user_id
+
     return jsonify(
-        [{'username': comment.user.username, 'comments': comment.comments, 'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
-          'is_login': current_user.is_authenticated} for comment
+        [{'username': comment.user.username, 'comments': comment.comments,
+          'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
+          'is_login': current_user.is_authenticated, 'user_id': comment.user_id, 'current_user_id': currentUserId} for
+         comment
          in
          comments])
 
@@ -115,8 +123,13 @@ def add_comments():
     db.session.add(comment)
     db.session.commit()
 
-    return jsonify({'username': comment.user.username, 'comments': comment.comments, 'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
-                    'is_login': current_user.is_authenticated})
+    currentUserId = -1
+    if current_user.is_authenticated:
+        currentUserId = current_user.user_id
+    return jsonify({'username': comment.user.username, 'comments': comment.comments,
+                    'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
+                    'is_login': current_user.is_authenticated, 'user_id': userId, 'current_user_id': currentUserId})
+
 
 @board_bp.route('/test_data', methods=['POST'])
 def test_data():
