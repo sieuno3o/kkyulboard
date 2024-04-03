@@ -39,6 +39,7 @@
             </div>
             
             {% if current_user.is_authenticated %}
+
                 <form id="comment-form" action="{{url_for('board.add_comment')}}" method="post">
                     <div class="row mt-4">
                         <div class="col-11">
