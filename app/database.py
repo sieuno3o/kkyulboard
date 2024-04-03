@@ -6,8 +6,9 @@ from sqlalchemy import ForeignKey
 
 db = SQLAlchemy()
 
+
 class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String)
     email = db.Column(db.String, unique=True)
@@ -16,17 +17,20 @@ class User(UserMixin, db.Model):
     comment = db.Column(db.String)
     created_at = db.Column(db.DateTime, default=datetime.now)
     posts = relationship('Post', back_populates='user', lazy='joined')
-    # posts = relationship('Post', back_populates='user', lazy='select')
+    comments = relationship('Comment', back_populates='user', lazy='joined')
+
+    def get_id(self):
+        return str(self.user_id)
 
     def __repr__(self):
         return f"{self.username} <{self.email}>"
 
 
 class Post(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    post_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String, nullable=False)
     body = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('user.user_id'), nullable=False)
     status = db.Column(db.String, nullable=True)
     problem_url = db.Column(db.String, nullable=True)
     created_at = db.Column(db.DateTime, nullable=False)
@@ -35,7 +39,18 @@ class Post(db.Model):
     like_count = db.Column(db.Integer, nullable=True)
     secret_mode = db.Column(db.Boolean, nullable=True)
     user = relationship('User', back_populates='posts', lazy='joined')
-    # user = relationship('User', back_populates='posts', lazy='select')
+    comments = relationship('Comment', back_populates='post', lazy='joined', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"[{self.user}] {self.title}"
+
+
+class Comment(db.Model):
+    comment_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    comments = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('user.user_id'), nullable=False)
+    post_id = db.Column(db.Integer, ForeignKey('post.post_id'), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime, nullable=False)
+    post = relationship('Post', back_populates='comments', lazy='joined')
+    user = relationship('User', back_populates='comments', lazy='joined')

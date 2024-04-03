@@ -28,7 +28,7 @@
                     </div>
 
                     {% if isLogin %}
-                        <a href="{{ url_for('board.create') }}" class="btn btn-theme-color mb-2 mx-2">글작성</a>
+                        <a href="{{ url_for('board.createPost') }}" class="btn btn-theme-color mb-2 mx-2">글작성</a>
                     {% endif %}
 
                     <form class="form-inline" action="{{ url_for('board.test_data') }}" method="POST">
@@ -51,8 +51,8 @@
                 <tbody>
                 {% for post in pag.items %}
                     <tr>
-                        <td style="text-align: center;">{{ stIdx + loop.index0 }}</td>
-                        <td><a class="board-td-custom" href="#">{{ post.title }}</a></td>
+                        <td style="text-align: center;">{{ stIdx - loop.index0 }}</td>
+                        <td><a class="board-td-custom" href="{{ url_for('board.detail', post_id=post.post_id)}}">{{ post.title }}</a></td>
                         <td style="text-align: center;">{{ post.user.username }}</td>
                         <td style="text-align: center;">{{ post.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
                         <td style="text-align: center;">{{ post.click_count }}</td>

@@ -1,0 +1,180 @@
+{% extends "layout.html" %}
+{% block title %}POST DETAIL{% endblock %}
+{% block head %}
+
+<style scoped>
+.main {
+    padding: 50px 80px;
+    margin-top: 80px;
+    width: 1200px;
+    display: block;
+}
+
+.title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #fabe57;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mainText {
+    padding: 10px;
+}
+</style>
+
+<div class="container">
+    <div class="center">
+        <div class="main">
+            <div class = "title">
+                <span style="font-size: x-large;">임시 제목입니다</span>
+                <span>작성자 김시은</span>
+            </div>
+            <div class = "mainText">
+            <span class="text">import collections<br>
+            from typing import List<br>
+
+            class Solution:<br>
+            def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:<br>
+            results = []<br>
+            window = collections.deque()<br>
+            current_max = float('-inf')<br>
+            <br>알고리즘이란 컴퓨터가 따라 할 수 있도록 문제를 해결하는 절차나 방법을 자세히 설명하는 과정이다. 이를 자세히 설명하면 컴퓨터를 활용한 문제 해결 과정에서 주어진 문제를 해결하는 일련의 방법 또는 절차이며, 문제해결
+            방법을 순서대로, 절차대로 나열한 것이라고 볼 수 있다.</span>
+            </div>
+
+        </div>
+    </div>
+    <!--
+    ==================================================================
+                                방명록
+    ==================================================================
+     -->
+    <div class="comment-container">
+        <div class="row mt-4">
+            <div class="col">
+                <div class="comment-text-line">
+                    <h3> 🍊 좋아요</h3>
+                    <h3 id="like-count"></h3>
+                    <h3>댓글</h3>
+                    <h3 id="comment-count"></h3>
+                    <h3>개</h3>
+                </div>
+            </div>
+            <table class="table postTable comment-table">
+                <tbody id="comment-table-body">
+                <!--
+                여기에 방명록 데이터가 추가됩니다.
+                -->
+                <tr>
+                    <td>이름</td>
+                    <td>코멘트</td>
+                    <td>날짜
+                        <button id="btn-update-comment" type="submit" class="btn btn-primary mt-2">수정</button>
+                        <button id="btn-delete-comment" type="submit" class="btn btn-primary mt-2">삭제</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="row">
+                <form id="comment-form" class="book" >
+                    <div class="col-11">
+                        <textarea id="text-comments" class="form-control" rows="3" placeholder="남기실 말씀을 적어주세요."
+                                  name="comments"></textarea>
+                    </div>
+                    <div class="col">
+                        <button id="btn-register" type="submit" class="btn btn-primary mt-2">등록</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let post_id = {{ post.post_id }}
+    refreshCommentList();
+
+    function refreshCommentList() {
+        fetch(`/board/get_comments?post_id=${post_id}`)
+            .then(response => response.json())
+            .then(comments => {
+                {# 댓글 입력창 clear #}
+                const textComments = document.getElementById('text-comments')
+                textComments.value = ''
+
+                const commentCountText = document.getElementById('comment-count');
+                commentCountText.innerHTML = comments.length
+
+                const tbody = document.getElementById('comment-table-body');
+                tbody.innerHTML = '';
+
+                let idx = 0
+                comments.forEach(comment => {
+                    {#console.log(`name=${comment.username}, comments=${comment.comments}, updated_at=${comment.updated_at}`)#}
+                    const tr = document.createElement('tr');
+                    const tdUserName = document.createElement('td');
+                    const tdComments = document.createElement('td');
+                    const tdUpdateDate = document.createElement('td');
+
+                    tdUserName.textContent = comment.username;
+                    tdComments.textContent = comment.comments;
+                    tdUpdateDate.textContent = comment.updated_at;
+
+                    if(comment.is_login) {
+                        const btnUpdate = document.createElement('button');
+                        btnUpdate.id = `btn-update-comment${idx}`
+                        btnUpdate.type = 'submit'
+                        btnUpdate.classList.add('btn')
+                        btnUpdate.classList.add('btn-primary')
+                        btnUpdate.textContent = '수정'
+
+                        const btnDelete = document.createElement('button');
+                        btnDelete.id = `btn-delete-comment${idx}`
+                        btnDelete.type = 'submit'
+                        btnDelete.classList.add('btn')
+                        btnDelete.classList.add('btn-primary')
+                        btnDelete.textContent = '삭제'
+
+                        tdUpdateDate.appendChild(btnUpdate)
+                        tdUpdateDate.appendChild(btnDelete)
+                    }
+
+                    tr.appendChild(tdUserName);
+                    tr.appendChild(tdComments);
+                    tr.appendChild(tdUpdateDate);
+
+                    tbody.appendChild(tr)
+                    idx++
+                });
+            });
+    }
+
+    document.getElementById('comment-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        formData.append('post_id', post_id)
+        fetch('/board/add_comment', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                refreshCommentList();
+            });
+    });
+
+    document.getElementById('text-comments').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            document.getElementById('btn-register').click();
+        }
+    });
+</script>
+
+{% endblock %}
