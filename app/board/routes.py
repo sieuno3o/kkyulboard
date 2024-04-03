@@ -29,7 +29,9 @@ def index():
     except:
         return redirect(url_for('board.index'))
 
-    stIdx = (pag.page - 1) * pag.per_page + 1
+    # stIdx = (pag.page - 1) * pag.per_page + 1
+
+    stIdx = pag.total - (pag.page - 1) * pag.per_page
     postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
 
     isLogin = current_user.is_authenticated
@@ -38,10 +40,27 @@ def index():
 
 @board_bp.route('/detail')
 def detail():
-    comments = Comment.query.all()
-    isLogin = True
-    return render_template('board/detail.html', comments=comments, isLogin=isLogin)
+    post_id = request.args.get('post_id', None, type=int)
 
+    if post_id:
+        return redirect(url_for('board.render_detail', post_id=post_id))
+    else:
+        return redirect(url_for('board.index'))
+
+@board_bp.route('/detail/<post_id>')
+def render_detail(post_id):
+    post = Post.query.filter_by(post_id=post_id).first()
+
+    # post_id에 해당하는 데이터가 없으면 index로 redirect
+    if not post:
+        return redirect(url_for('board.index'))
+
+    # click 카운트 추가
+    post.click_count += 1
+    db.session.commit()
+
+    isLogin = current_user.is_authenticated
+    return render_template('board/detail.html', isLogin=isLogin, post=post)
 
 
 @board_bp.route('/create', methods=["GET", "POST"])
@@ -66,9 +85,14 @@ def createPost():
     return render_template('board/create.html')
 
 
-@board_bp.route('/get_comments')
+@board_bp.route('/get_comments', methods=["GET"])
 def get_comments():
-    comments = Comment.query.all()
+    post_id = request.args.get('post_id', None, type=int)
+    if not post_id:
+        print('post_id is null')
+        return redirect(url_for('board.index'))
+
+    comments = Comment.query.filter_by(post_id=post_id)
     return jsonify(
         [{'username': comment.user.username, 'comments': comment.comments, 'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
           'is_login': current_user.is_authenticated} for comment
@@ -78,32 +102,14 @@ def get_comments():
 
 @board_bp.route('/add_comment', methods=['POST'])
 def add_comments():
-    '''
-    게시판 -> 상세페이지 이동하여 페이지 번호 부여 받으면 해당 포스트 기준으로 작업할 예정
-    - 현재는 임시 사용자, 포스트 내용 적용함
-    '''
     comments = request.form.get('comments')
-    if not comments:
+    postId = request.form.get('post_id')
+    userId = current_user.user_id
+    if not comments or not postId:
+        print(f'comments={comments}, post id={postId}')
         return
 
-    user = User.query.first()
-    if not user:
-        user = User(username='이상일', password='1111', email='email2', grade='', userpic='')
-        db.session.add(user)
-        db.session.commit()
-        user = User.query.first()
-
-    post = Post.query.first()
-    if not post:
-        title = '백준 DFS'
-        post = Post(title=title, body='body1', user_id=user.user_id, created_at=datetime.now(),
-                    updated_at=datetime.now(), click_count=1)
-        db.session.add(post)
-        db.session.commit()
-        post = Post.query.first()
-
-
-    comment = Comment(comments=comments, user_id=user.user_id, post_id=post.post_id,
+    comment = Comment(comments=comments, user_id=userId, post_id=postId,
                       created_at=datetime.now(), updated_at=datetime.now())
 
     db.session.add(comment)
@@ -152,7 +158,7 @@ def test_data():
     except:
         return redirect(url_for('board.index'))
 
-    stIdx = (pag.page - 1) * pag.per_page + 1
+    stIdx = pag.total - (pag.page - 1) * pag.per_page
     postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
 
     isLogin = current_user.is_authenticated

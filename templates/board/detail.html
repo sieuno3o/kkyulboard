@@ -98,10 +98,11 @@
     </div>
 </div>
 <script>
+    let post_id = {{ post.post_id }}
     refreshCommentList();
 
     function refreshCommentList() {
-        fetch('/board/get_comments')
+        fetch(`/board/get_comments?post_id=${post_id}`)
             .then(response => response.json())
             .then(comments => {
                 {# 댓글 입력창 clear #}
@@ -158,6 +159,7 @@
     document.getElementById('comment-form').addEventListener('submit', function (event) {
         event.preventDefault();
         const formData = new FormData(event.target);
+        formData.append('post_id', post_id)
         fetch('/board/add_comment', {
             method: 'POST',
             body: formData
