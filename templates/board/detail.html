@@ -70,6 +70,27 @@
             </div>
             <table class="table postTable comment-table">
                 <tbody id="comment-table-body">
+                <tr>
+                    <td>아이디</td>
+                    <td>
+                        <div class="collapse show" id="collapse-comments-0">
+                            내용
+                        </div>
+                        <div class="collapse" id="collapse-comments-0">
+                            <form>
+                                <textarea id="update-comment-text" class="form-control" rows="3"></textarea>
+                                <input type="hidden" id="update-comment-id" value="1">
+                                <button type="submit" class="btn btn-primary comment-update-btn">수정 완료</button>
+                            </form>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapse-comments-0">
+                            수정
+                        </button>
+                    </td>
+                </tr>
                 <!--
                 여기에 방명록 데이터가 추가됩니다.
                 -->
@@ -96,7 +117,7 @@
     const post_id = {{ post.post_id }}
     addEventListenersToElements(post_id);
 
-    refreshCommentList(post_id);
+    {#refreshCommentList(post_id);#}
 </script>
 
 {% endblock %}
