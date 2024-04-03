@@ -14199,7 +14199,6 @@ a.button3 {
     /* 선택 테두리 제거 */
 }
 
-
 .main {
     padding: 50px 80px;
     margin-top: 80px;
@@ -14230,6 +14229,7 @@ a.button3 {
 .mainText {
     padding: 10px;
 }
+
 
 .navbarLogo {
     width: 32px;
