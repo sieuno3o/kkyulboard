@@ -73,6 +73,10 @@
         justify-content: space-between;
         align-items: center;
     }
+    .changePass {
+        border: none;
+        outline: none; /* 선택 테두리 제거 */
+    }
 </style>
 <script>
     function loadFile(input) {
@@ -80,7 +84,7 @@
 
         // 이미지를 표시할 공간 가져오기
         let container = document.getElementById('image-show');
-        
+
         // 이전 이미지가 있는 경우 제거
         while (container.firstChild) {
             container.removeChild(container.firstChild);
@@ -110,7 +114,13 @@
         <div class="custom_row_value">
             <form class="horizontal" method="post" enctype="multipart/form-data"> <!-- 이미지 파일 데이터에 알맞는 enctype 설정 -->
                 <div class="addImage" id="image-show">
-                    <img src="{{ url_for('static', filename=current_user.userpic) }}" style="width: 100%; height: 100%; object-fit: cover;"> <!-- 이미지 띄울 공간 -->
+                    {% if current_user.userpic %}
+                        <img src="{{ url_for('static', filename=current_user.userpic) }}"
+                        style="width: 100%; height: 100%; object-fit: cover;"> 
+                    {% else %}
+                        <img src="/static/noimage.png"
+                        style="width: 100%; height: 100%; object-fit: cover;"> 
+                    {% endif %}
                 </div>
                 <input type="file" accept="image/*" onchange="loadFile(this)">
             </form>
@@ -125,6 +135,12 @@
         <div class="custom_row_value">{{ current_user.username }}</div>
     </div>
     <div class="custom_row">
+        <div class="custom_row_key">패스워드</div>
+        <div class="custom_row_value">
+            <input type="password" class="custom_row_value changePass changeValueInput" value="*****">
+        </div>
+    </div>
+    <div class="custom_row">
         <div class="custom_row_key">이메일</div>
         <div class="custom_row_value">{{ current_user.email }}</div>
     </div>
@@ -134,13 +150,273 @@
     </div>
     <div class="custom_row">
         <div class="custom_row_key">자기 소개</div>
-        <div class="custom_row_value">{{ current_user.comment }}</div>
+        <div class="custom_row_value changeValueText">{{ current_user.comment }}</div>
     </div>
-
 </div>
 
+<!-- 수정된 버튼과 모달 코드 -->
 <div class="button_area">
-    <button type="submit" class="button_1">게시판으로 돌아가기</button>
+    <button type="button" class="button_1" data-bs-toggle="modal" data-bs-target="#passwordModal" data-action="update">
+        정보수정
+    </button>
+    <button type="button" class="button_1" data-bs-toggle="modal" data-bs-target="#passwordModal" data-action="delete">
+        계정삭제
+    </button>
 </div>
+
+<!-- 패스워드 검증 모달 -->
+<div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="passwordModalLabel">패스워드 확인</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 패스워드 입력 폼 -->
+                <div class="mb-3">
+                    <label for="passwordInput" class="form-label">패스워드</label>
+                    <input type="password" class="form-control" id="passwordInput">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" id="confirmButton">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // 클릭 이벤트를 사용하여 프로필 정보 수정
+        document.querySelectorAll('.changeValueInput').forEach(function(element) {
+            element.addEventListener('click', function() {
+                // 기존 텍스트 내용 선택
+                const range = document.createRange();
+                range.selectNodeContents(this);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                
+                const currentValue = this.value.trim();
+                const inputElement = document.createElement('input');
+                inputElement.setAttribute('type', 'password');
+                inputElement.setAttribute('value', currentValue);
+
+                // 기존 요소를 숨기고 입력 요소를 추가
+                this.style.display = 'none';
+                this.parentNode.insertBefore(inputElement, this.nextSibling);
+
+                // 입력 요소에 포커스 주기
+                inputElement.focus();
+                inputElement.select();
+
+                // 입력 요소에서 엔터 키 누르면 수정 완료
+                inputElement.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        const updatedValue = inputElement.value.trim();
+                        if (updatedValue !== '') {
+                            element.value = updatedValue;
+                            console.log('Updated value:', updatedValue);
+                        } else {
+                            element.value = currentValue;
+                        }
+
+                        // 입력 요소 제거 및 기존 요소 다시 표시
+                        inputElement.parentNode.removeChild(inputElement);
+                        element.style.display = 'inline';
+                    }
+                });
+
+                // 포커스를 잃으면 수정 취소
+                inputElement.addEventListener('blur', function() {
+                    // 수정된 값이 비어있는 경우 현재 값으로 복원
+                    if (inputElement.value.trim() === '') {
+                        element.textContent = currentValue;
+                    }
+                    // 포커스를 잃은 경우 수정 취소
+                    else {
+                        // 수정된 값을 해당 요소에 적용
+                        element.textContent = inputElement.value.trim();
+                    }
+
+                    // 입력 요소 제거 및 기존 요소 다시 표시
+                    inputElement.parentNode.removeChild(inputElement);
+                    element.style.display = 'inline';
+                });
+            });
+        });
+
+        
+        document.querySelectorAll('.changeValueText').forEach(function(element) {
+            element.addEventListener('click', function() {
+                // 기존 텍스트 내용 선택
+                const range = document.createRange();
+                range.selectNodeContents(this);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                
+                const currentValue = this.textContent.trim();
+                const textareaElement = document.createElement('textarea');
+                // 클릭한 요소의 내용을 textarea로 교체
+                textareaElement.textContent = currentValue;
+                
+                // 기존 요소를 숨기고 입력 요소를 추가
+                this.style.display = 'none';
+                this.parentNode.insertBefore(textareaElement, this.nextSibling);
+
+                // textarea에 포커스 주기
+                textareaElement.focus();
+                textareaElement.select();
+
+                // textarea에서 엔터 키 누르면 수정 완료
+                textareaElement.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        const updatedValue = textareaElement.value.trim();
+                        if (updatedValue !== '') {
+                            element.textContent = updatedValue;
+                            console.log('Updated value:', updatedValue);
+                        } else {
+                            element.textContent = currentValue;
+                        }
+                         // 입력 요소 제거 및 기존 요소 다시 표시
+                        textareaElement.parentNode.removeChild(textareaElement);
+                        element.style.display = 'inline';
+                    }
+                });
+
+                // 포커스를 잃으면 수정 취소
+                textareaElement.addEventListener('blur', function() {
+                    // 수정된 값이 비어있는 경우 현재 값으로 복원
+                    if (textareaElement.value.trim() === '') {
+                        element.textContent = currentValue;
+                    }
+                    // 포커스를 잃은 경우 수정 취소
+                    else {
+                        // 수정된 값을 해당 요소에 적용
+                        element.textContent = textareaElement.value.trim();
+                    }
+
+                    // 입력 요소 제거 및 기존 요소 다시 표시
+                    textareaElement.parentNode.removeChild(textareaElement);
+                    element.style.display = 'inline';
+                });
+            });
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordModal = document.getElementById('passwordModal');
+        passwordModal.addEventListener('show.bs.modal', function (event) {
+            
+            const button = event.relatedTarget;
+            const action = button.getAttribute('data-action');
+            const form = document.getElementById('passwordForm');
+            const url = '/acc/' + action + "User";
+
+            // 확인 버튼 클릭 시 동작 설정
+            const confirmButton = document.getElementById('confirmButton');
+            confirmButton.addEventListener('click', handleConfirmation);
+
+            // Enter 키 입력 시 동작 설정
+            passwordModal.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleConfirmation();
+                }
+            });
+
+            function handleConfirmation() {
+            
+                const passwordInput = document.getElementById('passwordInput').value.trim();
+                // 패스워드 체크
+                
+                fetch('/acc/checkPassword', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        password: passwordInput
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isValid) {
+                        if (action == "update"){
+                            const form = document.createElement('form');
+                            form.setAttribute('method', 'POST');
+                            form.setAttribute('enctype', 'multipart/form-data');
+                            form.setAttribute('action', url);
+
+                            const fileInput = document.querySelector('input[type="file"]');
+                            const profilePic = fileInput.files[0]; 
+                            const newPassword = document.querySelector('.changePass').textContent.trim();
+                            const newComment = document.querySelector('.changeValueText').textContent.trim();
+
+                            // 이미지 파일 추가
+                            if (profilePic){
+                                const profilePicInput = document.createElement('input');
+                                profilePicInput.setAttribute('type', 'file');
+                                profilePicInput.setAttribute('name', 'changePic');
+                                profilePicInput.files = fileInput.files;
+                                form.appendChild(profilePicInput);
+                            }
+                            // 패스워드 추가
+                            const passwordInput = document.createElement('input');
+                            passwordInput.setAttribute('type', 'text');
+                            passwordInput.setAttribute('name', 'changePass');
+                            passwordInput.value = newPassword;
+                            form.appendChild(passwordInput);
+
+                            // 자기소개글 추가
+                            const commentInput = document.createElement('input');
+                            commentInput.setAttribute('type', 'text');
+                            commentInput.setAttribute('name', 'changeComment');
+                            commentInput.value = newComment;
+                            form.appendChild(commentInput);
+
+                            // form을 body에 추가하고 전송
+                            document.body.appendChild(form);
+                            form.submit();
+                        }else if(action == "delete"){
+                            fetch(url, {
+                                method: 'POST', 
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json(); // 응답 데이터를 JSON 형식으로 파싱하여 반환
+                            })
+                            .then(data => {
+                                window.location.href = '/acc/index';
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                        }
+                    } else {
+                        location.reload();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+            // 모달이 열릴 때 패스워드 입력란에 포커스 주기
+            setTimeout(function() {
+                const passwordInput = document.getElementById('passwordInput');
+                passwordInput.focus();
+            }, 500); 
+            
+        });
+    });
+</script>
 
 {% endblock %}
