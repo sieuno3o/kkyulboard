@@ -13,11 +13,9 @@ def index():
     return render_template('acc/index.html')
 
 
-
 @acc_bp.route('/profile')
 def profile():
     return render_template('acc/profile.html')
-
 
 
 @acc_bp.route('/login', methods=['GET', 'POST'])
@@ -33,11 +31,10 @@ def login():
                 return redirect(url_for('acc.index'))
             else:
                 flash('아이디나 패스워드를 확인해 주세요!', 'danger')
-                flash('아이디나 패스워드를 확인해 주세요!', 'danger')
         else:
             flash('아이디나 패스워드를 확인해 주세요!', 'danger')
-            flash('아이디나 패스워드를 확인해 주세요!', 'danger')
     return render_template('acc/login.html')
+
 
 @acc_bp.route("/logout")
 def logout():
@@ -52,17 +49,19 @@ def signup():
         password = sha512_hash(request.form.get('regPass'))
         email = request.form.get('regMail')
         comment = request.form.get("regCom")
-        
+
         if not request.files.get("regPic"):
             filePath = ""
             print(1)
         else:
             userpic = request.files['regPic']
             ext = userpic.filename.split(".")[-1]
-            hashed_filename = sha512_hash(f"{username}UserPic{datetime.now()}") + f".{ext}"
+            hashed_filename = sha512_hash(
+                f"{username}UserPic{datetime.now()}") + f".{ext}"
             filePath = '/uploads/userpic/' + hashed_filename
             userpic.save(f"static{filePath}")
-        user = User(username=username, password=password, email=email, userpic=filePath, comment=comment)
+        user = User(username=username, password=password,
+                    email=email, userpic=filePath, comment=comment)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('acc.login'))
@@ -80,6 +79,7 @@ def deleteUser():
     flash("계정이 삭제되었습니다", "info")
     return jsonify()
 
+
 @acc_bp.route('/updateUser', methods=["POST"])
 def updateUser():
     changeData = False
@@ -88,17 +88,19 @@ def updateUser():
             os.remove("static"+current_user.userpic)
         userpic = request.files['changePic']
         ext = userpic.filename.split(".")[-1]
-        hashed_filename = sha512_hash(f"{current_user.username}UserPic{datetime.now()}") + f".{ext}"
+        hashed_filename = sha512_hash(
+            f"{current_user.username}UserPic{datetime.now()}") + f".{ext}"
         filePath = '/uploads/userpic/' + hashed_filename
         userpic.save(f"static{filePath}")
         current_user.userpic = filePath
         flash("프로필 사진이 업데이트 되었습니다", "info")
         changeData = True
-        
+
     newComm = request.form.get('changeComment')
     if newComm != current_user.comment:
         current_user.comment = newComm
         flash("자기소개글이 업데이트 되었습니다", "info")
+        print('자기소개글 업뎃')
         changeData = True
 
     newPass = request.form.get("changePass")
@@ -107,11 +109,10 @@ def updateUser():
         current_user.password = sha512_hash(newPass)
         flash("패스워드가 업데이트 되었습니다", "info")
         changeData = True
-        
+
     if changeData:
         db.session.commit()
     return redirect(url_for('acc.profile'))
-
 
 
 @acc_bp.route("/checkNameDup", methods=["POST"])
@@ -121,6 +122,7 @@ def checkNameDup():
     if existing_user:
         return jsonify({"isDuplicate": True})  # 사용자 이름이 이미 존재함
     return jsonify({"isDuplicate": False})
+
 
 @acc_bp.route("/checkMailDup", methods=["POST"])
 def checkMailDup():
