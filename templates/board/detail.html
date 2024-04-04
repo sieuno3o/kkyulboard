@@ -5,7 +5,47 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
+<style>
+    /* 버튼 디자인 */
+/* 버튼 스타일 */
+.fixed-buttons {
+    position: fixed;
+    bottom: 70px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 40px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+    z-index: 1; /* 다른 요소 위에 고정 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
+.add-button {
+    right: 20px;
+}
+
+.add-button:hover{
+    opacity: 0.5;
+}
+
+.edit-button{
+    right: 120px;
+    display: none;
+}
+.remove-button{
+    right: 70px;
+    display: none;
+}
+</style>
 {% endblock %}
 
 {% block content%}
@@ -19,7 +59,7 @@
             <div class="detail-mainText">
                 <div class="markdownView">{{post.body}}</div>
             </div>
-        
+    
             <div class="comment-text-line mt-3 mb-4">
                 <h3> 🍊 좋아요 {{ comCount}} 개</h3>
             </div>
@@ -50,6 +90,8 @@
                 {% endfor %}
             </div>
             
+    
+
             {% if current_user.is_authenticated %}
 
                 <form id="comment-form" action="{{url_for('board.add_comment')}}" method="post">
@@ -65,12 +107,43 @@
                     </div>
                 </form>
             {% endif %}
-            
         </div>
+        
+        {% if current_user.grade == 1 or current_user == post.user %}
+            <button class="add-button fixed-buttons" onclick="showTwoButton()">+</button>
+            <a href="{{ url_for('board.editPost', post_id=post.post_id )}}"><button class="edit-button fixed-buttons">✏️</button></a>
+            <a href="{{ url_for('board.deletePost', post_id=post.post_id )}}"><button class="remove-button fixed-buttons">🗑️</button></a>
+        {% endif %}
+    
+
     </div>
 </div>
 <script>
-    
+    function showTwoButton() {
+        addButton = document.querySelector('.add-button');
+        editButton = document.querySelector('.edit-button');
+        removeButton = document.querySelector('.remove-button');
+        if(addButton.innerHTML == "+"){
+            addButton.innerHTML = "-";
+            addButton.style.opacity = 0.5;
+            editButton.style.display = "block";
+            removeButton.style.display = "block";
+        }else{
+            addButton.innerHTML = "+";
+            addButton.style.opacity = 1;
+            editButton.style.display = "none";
+            removeButton.style.display = "none";
+        }
+    }
+
+    function editItem() {
+        // 수정 기능 구현
+    }
+
+    function deleteItem() {
+        // 삭제 기능 구현
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const markdownView = document.querySelector('.markdownView');
         const markdownContent = markdownView.textContent;
@@ -188,8 +261,10 @@
     var editButtons = document.querySelectorAll('.btn-request');
     editButtons.forEach(function(button) {
         button.addEventListener('click', function() {
-            if(button.innerHTML == "❌"){
-                removeData(button);
+            if(button.innerHTML == "🗑️"){
+                if(confirm("정말로 삭제하시겠습니까?")){
+                    removeData(button);
+                }
             }else if(button.innerHTML == "✅"){
                 handleEditButtonClick(button);
             }else{

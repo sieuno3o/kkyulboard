@@ -12,3 +12,5 @@ def read_from_json(filename):
         data = json.load(json_file)
         return data
     
+    
+    
