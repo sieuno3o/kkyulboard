@@ -55,12 +55,17 @@
             <div class="detail-title">
                 <div style="display: flex; flex-direction: column;">
                     <span style="font-size: 30px;"><b>{{post.title}}</b></span>
-                    <span>작성자 {{post.user.username}}&nbsp;|&nbsp;2024. 04. 01. 12:47</span>
+                    <div class="horizontal d-flex justify-content-start">
+                        <span>조회수</span>&nbsp;{{ post.click_count }}&nbsp;&nbsp;|&nbsp;&nbsp;
+                        <span>좋아요</span>&nbsp;{{ post.likes | length }}&nbsp;&nbsp;|&nbsp;&nbsp;
+                        <span>댓글</span>&nbsp;{{ post.comments | length }}
+                    </div>
+                    <div class="horizontal d-flex justify-content-start">
+                        <span>문제 URL</span>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="{{ post.problem_url }}">{{ post.problem_url }}</a>
+                    </div>
                 </div>
                 <div style="margin-right: 15px;">
-                    <span>조회수</span>&nbsp;{{ post.click_count }}&nbsp;&nbsp;|&nbsp;<span></span>
-                    <span>좋아요</span>&nbsp;{{ post.likes | length }}&nbsp;&nbsp;|&nbsp;<span></span>
-                    <span>댓글</span>&nbsp;{{ post.comments | length }}<span></span>
+                    <span>작성자 {{post.user.username}}&nbsp;|&nbsp;{{ post.updated_at.strftime("%Y.%m.%d. %H:%M") }}</span>
                 </div>
             </div>
             <div class="detail-mainText">
