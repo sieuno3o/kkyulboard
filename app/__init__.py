@@ -5,20 +5,29 @@ from .board.routes import board_bp
 from .utils import read_from_json
 from flask_login import LoginManager
 import os
-from flask_cors import CORS
-
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
 
 def create_app():
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
-    CORS(app)
+
+    admin = Admin(app)
+    print(Post.__table__.columns.keys())
+    class UserAdmin(ModelView):
+        column_list = User.__table__.columns.keys()
+
+    class PostAdmin(ModelView):
+        column_list =  Post.__table__.columns.keys() + ["user"]
+    
+    class CommentAdmin(ModelView):
+        column_list = Comment.__table__.columns.keys() + ["user", "post"]
+    
+    admin.add_view(UserAdmin(User, db.session))
+    admin.add_view(PostAdmin(Post, db.session))
+    admin.add_view(CommentAdmin(Comment, db.session))
+
     app.secret_key = read_from_json('secret.json')["SECRETKEY"]
-    admin = Admin(app, name='Admin Panel', template_mode='bootstrap3')
-    admin.add_view(ModelView(User, db.session))
-    admin.add_view(ModelView(Post, db.session))
-    admin.add_view(ModelView(Comment, db.session))
 
     # app.config['UPLOAD_FOLDER'] = 'uploads'
 
@@ -35,8 +44,10 @@ def create_app():
     basedir = os.path.abspath(os.path.dirname(__file__))
     app.config['SQLALCHEMY_DATABASE_URI'] = \
         'sqlite:///' + os.path.join(basedir, 'database.db')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
-
+    
+    
     app.register_blueprint(acc_bp)
     app.register_blueprint(board_bp)
 
