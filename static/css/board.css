@@ -5,23 +5,23 @@
 }
 
 .table th:nth-child(1) {
-    width: 10%;
+    width: 8%;
 }
 
 .table th:nth-child(2) {
-    width: 40%;
+    width: 56%;
 }
 
 .table th:nth-child(3) {
-    width: 10%;
+    width: 12%;
 }
 
 .table th:nth-child(4) {
-    width: 15%;
+    width: 16%;
 }
 
 .table th:nth-child(5) {
-    width: 10%;
+    width: 8%;
 }
 
 .board-text-line h2 {
@@ -35,22 +35,18 @@
 }
 
 .board-text-line .post-count {
-    color: #FAC17E;
-    font-style: italic;
-}
-
-.form-select-color-custom {
-    background-color: #AED7C6;
-    color: #FFFFFF;
-}
-
-.form-select-size-custom {
-    width: 150px;
+    font-weight: 700;
 }
 
 .btn-theme-color,
 .btn-theme-color:hover {
-    background-color: #FAC17E;
+    background-color: rgba(255, 169, 63, 0.9);
+    color: #FFFFFF;
+}
+
+.btn-sub-color,
+.btn-sub-color:hover {
+    background-color: rgba(94, 180, 117, 0.9);
     color: #FFFFFF;
 }
 
@@ -74,5 +70,6 @@
 }
 
 .table-rounded {
-    border-radius: 10px; /* Adjust the value to change the roundness */
+    border-radius: 10px;
+    /* Adjust the value to change the roundness */
 }
