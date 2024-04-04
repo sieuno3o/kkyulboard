@@ -72,7 +72,7 @@ def signup():
 @acc_bp.route('/deleteUser', methods=["POST"])
 def deleteUser():
     user = current_user
-    if user.userpic:
+    if user.userpic and os.path.exists('static{{user.userpic}}'):
         os.remove("static"+user.userpic)
     db.session.delete(user)
     db.session.commit()
@@ -85,7 +85,7 @@ def deleteUser():
 def updateUser():
     changeData = False
     if 'changePic' in request.files:
-        if current_user.userpic:
+        if current_user.userpic and os.path.exists('static{{current_user.userpic}}'):
             os.remove("static"+current_user.userpic)
         userpic = request.files['changePic']
         ext = userpic.filename.split(".")[-1]
