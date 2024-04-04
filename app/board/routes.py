@@ -65,7 +65,7 @@ def render_detail(post_id):
         if not (post.user_id == current_user.user_id or current_user.grade):
             flash("접근 권한이 없습니다!", "info")
             return redirect(request.referrer)
-        
+
     # post_id에 해당하는 데이터가 없으면 index로 redirect
     if not post:
         flash("게시글이 존재하지 않습니다!", "info")
@@ -74,9 +74,20 @@ def render_detail(post_id):
     # click 카운트 추가
     post.click_count += 1
     db.session.commit()
-    isLogin = current_user.is_authenticated
-    comments = Comment.query.filter_by(post_id=post_id).order_by(Comment.created_at.desc()).all()
-    return render_template('board/detail.html', isLogin=isLogin, post=post, comments=comments, comCount=len(comments))
+    comments = Comment.query.filter_by(post_id=post_id).order_by(Comment.created_at.asc()).all()
+
+    # 로그인 사용자 정보 전달
+    # 로그인되지 않은 경우 current_user가 None이기 때문에 따로 관리 필요
+    userContext = {
+        'id': -1,
+        'grade': 0,
+    }
+    if current_user.is_authenticated:
+        userContext['id'] = current_user.user_id
+        userContext['grade'] = current_user.grade
+
+    return render_template('board/detail.html', post=post, comments=comments, comCount=len(comments),
+                           userContext=userContext)
 
 
 @board_bp.route('/create', methods=["GET", "POST"])
