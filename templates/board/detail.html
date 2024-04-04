@@ -32,10 +32,12 @@
                             <input type="text" class="commentInput" data-comm-id="{{ com.comment_id }}" style="border: none; background-color: transparent; width:100%;" value="{{com.comments}}" readonly>
                         </div>
                         <div class="col-lg-1 createTime" data-created-at="{{com.created_at}}"></div>
+                        {% if currentUserId == com.user.user_id or grade == 1 %}
                         <div class="col-lg-2">
                             <button class="btn btn-sm btn-request">✏️</button>
                             <button class="btn btn-sm btn-request" data-comm-id="{{ com.comment_id }}">❌</button>
                         </div>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </div>
