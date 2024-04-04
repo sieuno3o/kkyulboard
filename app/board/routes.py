@@ -8,6 +8,7 @@ from sqlalchemy import func
 
 board_bp = Blueprint('board', __name__, url_prefix='/board')
 
+
 @board_bp.route('/index')
 def index():
     cate = request.args.get('cate', "", type=str)
@@ -17,14 +18,15 @@ def index():
 
     perPage = 20
 
-    notices = Post.query.filter(Post.notice_mode==True).all()
+    notices = Post.query.filter(Post.notice_mode == True).all()
 
-    posts_query = Post.query.filter(Post.notice_mode!=True)
+    posts_query = Post.query.filter(Post.notice_mode != True)
     if keyword:
         if cate == "title":
             posts_query = posts_query.filter(Post.title.like(f"%{keyword}%"))
         elif cate == "writer":
-            posts_query = posts_query.join(User).filter(User.username == keyword)
+            posts_query = posts_query.join(
+                User).filter(User.username == keyword)
         elif cate == "content":
             posts_query = posts_query.filter(Post.body.like(f"%{keyword}%"))
 
@@ -36,7 +38,8 @@ def index():
         posts_query = posts_query.order_by(Post.click_count.desc())
     elif sort == 'like':
         like_counts_subquery = (
-            db.session.query(Like.post_id, func.count(Like.like_id).label('like_count'))
+            db.session.query(Like.post_id, func.count(
+                Like.like_id).label('like_count'))
             .filter(Like.deleted == False)  # deleted가 False인 좋아요만 고려
             .group_by(Like.post_id)
             .subquery()
@@ -55,6 +58,7 @@ def index():
 
     isLogin = current_user.is_authenticated
     return render_template('board/index.html', pag=pag, notices=notices, postsCount=postsCount, keyword=keyword, cate=cate, stIdx=stIdx, sort=sort, isLogin=isLogin)
+
 
 @board_bp.route('/detail')
 @board_bp.route('/detail/<post_id>')
@@ -76,7 +80,8 @@ def detail(post_id=None):
     # click 카운트 추가
     post.click_count += 1
     db.session.commit()
-    comments = Comment.query.filter_by(post_id=post_id).order_by(Comment.created_at.asc()).all()
+    comments = Comment.query.filter_by(
+        post_id=post_id).order_by(Comment.created_at.asc()).all()
 
     # 로그인 사용자 정보 전달
     # 로그인되지 않은 경우 current_user가 None이기 때문에 따로 관리 필요
@@ -95,7 +100,8 @@ def detail(post_id=None):
         'like_on': 0,
         'count': 0
     }
-    like = Like.query.filter_by(user_id=userContext['id'], post_id=post_id).first()
+    like = Like.query.filter_by(
+        user_id=userContext['id'], post_id=post_id).first()
     likeCount = Like.query.filter_by(post_id=post_id, deleted=False).count()
 
     # 좋아요가 없거나 취소 상태면 0, 좋아요가 있으면 1을 전달
@@ -142,6 +148,7 @@ def createPost():
         return redirect(url_for('board.index'))
     return render_template('board/create.html')
 
+
 @board_bp.route('/delete/<int:post_id>')
 def deletePost(post_id):
     post = Post.query.filter_by(post_id=post_id).first()
@@ -158,7 +165,6 @@ def deletePost(post_id):
     db.session.commit()
     flash("게시글이 삭제되었습니다.", "success")
     return redirect(url_for('board.index'))
-
 
 
 @board_bp.route('/edit/<int:post_id>', methods=["GET", "POST"])
@@ -195,6 +201,7 @@ def editPost(post_id):
     # GET 요청시에는 수정 페이지를 렌더링
     return render_template('board/edit.html', post=post)
 
+
 @board_bp.route('/add_comment', methods=['POST'])
 def add_comment():
     comments = request.form.get('comments')
@@ -204,7 +211,7 @@ def add_comment():
         return redirect(request.referrer)
     userId = current_user.user_id
     comment = Comment(comments=comments, user_id=userId, post_id=postId,
-                    created_at=datetime.now(), updated_at=datetime.now())
+                      created_at=datetime.now(), updated_at=datetime.now())
     db.session.add(comment)
     db.session.commit()
     return redirect(request.referrer)
