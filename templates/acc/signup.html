@@ -4,20 +4,77 @@
 
 {% endblock %}
 {% block content %}
-    <form id="signupForm" method="post" enctype="multipart/form-data">
-        <span class="regNameState"></span><br>
-        <input type="text" name="regName" placeholder="아이디를 입력해주세요"><br>
-        <input type="password" name="regPass" placeholder="패스워드를 입력해주세요"><br>
-        <input type="password" name="chkPass" placeholder="패스워드를 다시입력해주세요"><br>
-        <span class="regMailState"></span><br>
-        <input type="email" name="regMail" placeholder="이메일을 형식에 맞춰 작성해주세요"><br>
-        <input type="file" name="regPic"><br>
-        <textarea name="regCom" placeholder="소개글을 작성해주세요."></textarea>
-        <button type="button" onclick="signupCheck()">회원가입</button>
-    </form>
+<style scoped>
+    .signup-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-    <script>
+    #signupForm {
+        flex-direction: column;
+    }
 
+    .customInput {
+        width: 300px;
+        margin-top: -20px;
+    }
+
+    .file-input-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #imagePreview {
+        width: 100px; 
+        height: 100px;
+        margin-left: -100px;
+        display: none;
+    }
+
+    .file-input-text {
+        font-family: 'EF_jejudoldam';
+        font-size: larger;
+    }
+
+    .profile-text {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        font-family: 'EF_jejudoldam';
+        font-size: larger;
+        margin-bottom: 12px;
+    }
+</style>
+
+<div class="signup-center customLogo loginLogoBox textOrange">
+    <img class="navbarLogo marginRight16" src="/static/kkyul.png" alt="🍊">
+    <span style="font-family: 'EF_jejudoldam'">뀰 회원가입</span>
+    <img class="navbarLogo marginLeft16" src="/static/kkyul.png" alt="🍊">
+</div>
+<form id="signupForm" class="signup-center" method="post" enctype="multipart/form-data">
+    <span class="regNameState"></span><br>
+    <input type="text" class="customInput" name="regName" placeholder="아이디를 입력해주세요"><br>
+    <input type="password" class="customInput" name="regPass" placeholder="패스워드를 입력해 주세요"><br>
+    <input type="password" class="customInput" name="chkPass" placeholder="패스워드를 다시 입력해 주세요"><br>
+    <span class="regMailState"></span><br>
+    <input type="email" name="regMail" class="customInput" placeholder="이메일을 형식에 맞춰 작성해 주세요"><br>
+    <div class="file-input-container">
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <span class="profile-text textOrange">프로필 사진</span>
+            <div style="display: flex; flex-direction: row;">
+                <input type="file" name="regPic" id="regPic" onchange="previewFile()"> 
+                <img id="imagePreview"> 
+            </div>
+        </div>
+    </div>
+    <textarea name="regCom" class="customInput" style="margin-top: 40px;" placeholder="소개글을 작성해 주세요."></textarea>
+    <button type="button" style="width: 300px;" class="button2 marginTop16" onclick="signupCheck()">회원가입</button>
+</form>
+
+<script>
     const usernameInput = document.querySelector('input[name="regName"]');
     const usermailInput = document.querySelector('input[name="regMail"]');
     const usernameState = document.querySelector('.regNameState');
@@ -33,7 +90,7 @@
     let usernameBool = false;
     let usermailBool = false;
 
-    usernameInput.addEventListener('keyup', function() {
+    usernameInput.addEventListener('keyup', function () {
         const username = usernameInput.value.trim();
         if (username.length > 4) {
             fetch('/acc/checkNameDup', {
@@ -43,24 +100,24 @@
                 },
                 body: JSON.stringify({ username: username })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.isDuplicate) {
-                    usernameState.innerHTML = "사용중인 아이디입니다.";
-                    usernameBool = false;
-                } else {
-                    usernameState.innerHTML = "사용가능한 아이디입니다.";
-                    usernameBool = true;
-                }
-            })
-            .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isDuplicate) {
+                        usernameState.innerHTML = "사용중인 아이디입니다.";
+                        usernameBool = false;
+                    } else {
+                        usernameState.innerHTML = "사용가능한 아이디입니다.";
+                        usernameBool = true;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         } else {
             usernameState.innerHTML = "아이디는 5자리 이상으로 설정해주세요.";
             usernameBool = false;
         }
     });
 
-    usermailInput.addEventListener('keyup', function() {
+    usermailInput.addEventListener('keyup', function () {
         const usermail = usermailInput.value.trim();
         if (!isValidEmail(usermail)) {
             usermailState.innerHTML = "유효하지 않은 이메일 형식입니다.";
@@ -73,39 +130,57 @@
                 },
                 body: JSON.stringify({ email: usermail })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.isDuplicate) {
-                    usermailState.innerHTML = "이미 가입된 이메일입니다.";
-                    usermailBool = false;
-                } else {
-                    usermailState.innerHTML = "사용가능한 이메일입니다.";
-                    usermailBool = true;
-                }
-            })
-            .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.isDuplicate) {
+                        usermailState.innerHTML = "이미 가입된 이메일입니다.";
+                        usermailBool = false;
+                    } else {
+                        usermailState.innerHTML = "사용가능한 이메일입니다.";
+                        usermailBool = true;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         }
         const passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
         passwordModal.hide();
     });
+
+    function previewFile() {
+            const preview = document.getElementById('imagePreview'); 
+            const file = document.getElementById('regPic').files[0]; 
+            const reader = new FileReader();
+
+            reader.onloadend = function () {
+                preview.src = reader.result; 
+                preview.style.display = 'block';
+            };
+
+            if (file) {
+                reader.readAsDataURL(file); 
+            } else {
+                preview.src = "";
+                preview.style.display = 'none';
+            }
+        }
 
     function signupCheck() {
         const username = usernameInput.value.trim();
         const usermail = usermailInput.value.trim();
         const userpass = userpassInput.value.trim();
         const userchkpass = userchkpassInput.value.trim();
-        if(!usernameBool){
+        if (!usernameBool) {
             alert("입력하신 아이디를 확인해주세요");
-        }else if(userpass != userchkpass){
+        } else if (userpass != userchkpass) {
             alert("패스워드가 서로 일치하지 않습니다.");
-        }else if(!usermailBool){
+        } else if (!usermailBool) {
             alert("입력하신 이메일을 확인해주세요");
-        }else{
+        } else {
             document.getElementById("signupForm").submit();
         }
     }
-        // 패스워드 입력란에서 Enter 키 입력 감지
-    document.getElementById('passwordInput').addEventListener('keydown', function(event) {
+    // 패스워드 입력란에서 Enter 키 입력 감지
+    document.getElementById('passwordInput').addEventListener('keydown', function (event) {
         if (event.key === 'Enter') {
             event.preventDefault(); // 기본 동작 방지
             validatePassword(); // 패스워드 확인 함수 호출
@@ -113,8 +188,26 @@
     });
 
     // 확인 버튼 클릭 이벤트 처리
-    document.querySelector('.modal-footer .btn-primary').addEventListener('click', function() {
+    document.querySelector('.modal-footer .btn-primary').addEventListener('click', function () {
         validatePassword(); // 패스워드 확인 함수 호출
     });
-    </script>
+
+        function previewFile() {
+        const preview = document.getElementById('imagePreview'); // 이미지 미리보기 요소
+        const file = document.getElementById('regPic').files[0]; // 선택된 파일
+        const reader = new FileReader();
+
+        reader.onloadend = function () {
+            preview.src = reader.result; // 파일의 내용을 읽은 결과를 이미지 미리보기의 소스로 설정
+            preview.style.display = 'block'; // 이미지 미리보기 표시
+        };
+
+        if (file) {
+            reader.readAsDataURL(file); // 파일을 Data URL 형식으로 읽음
+        } else {
+            preview.src = "";
+            preview.style.display = 'none'; // 파일이 선택되지 않았으면 미리보기 숨김
+        }
+    }
+</script>
 {% endblock %}
