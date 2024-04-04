@@ -101,10 +101,10 @@
                 <!-- logined user -->
                 {% if current_user.is_authenticated %}
                 <a href="{{ url_for('acc.profile') }}" class="btn navBtn">내정보</a>
-                <a href="{{ url_for('acc.logout') }}" class="btn navBtn loginBtn">로그아웃</a>
+                <a href="{{ url_for('acc.logout') }}" class="btn navBtn">로그아웃</a>
                 <!-- anonymous user -->
                 {% else %}
-                <a href="{{ url_for('acc.login') }}" class="btn loginBtn">로그인</a>
+                <a href="{{ url_for('acc.login') }}" class="btn navBtn">로그인</a>
                 {% endif %}
             </div>
         </div>
