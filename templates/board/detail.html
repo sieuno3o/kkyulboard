@@ -23,6 +23,18 @@
 
         </div>
     </div>
+
+<!--
+========================================================
+좋아요
+========================================================
+-->
+    <div class="like-container justify-content-center d-flex">
+        <div class="btn-group-toggle" data-toggle="buttons">
+            <label id="like-btn-label" class="btn active custom-toggle">
+            </label>
+        </div>
+    </div>
     <!--
     ==================================================================
                                 방명록
@@ -32,7 +44,6 @@
         <div class="row mt-4">
             <div class="col">
                 <div class="comment-text-line">
-                    <h3> 🍊 좋아요</h3>
                     <h3 id="like-count"></h3>
                     <h3>댓글</h3>
                     <h3 id="comment-count"></h3>
@@ -75,8 +86,9 @@
             <div class="row">
                 <form id="comment-form">
                     <div class="col-11">
+                        <label for="text-comments"></label>
                         <textarea id="text-comments" class="form-control" rows="3" placeholder="남기실 말씀을 적어주세요."
-                                name="comments"></textarea>
+                                  name="comments"></textarea>
                     </div>
                     <div class="col">
                         <button id="btn-register" type="submit" class="btn btn-primary mt-2">등록</button>
@@ -88,11 +100,14 @@
     </div>
 </div>
 <script src="{{ url_for('static', filename='js/comment.js') }}"></script>
+<script src="{{ url_for('static', filename='js/like.js') }}"></script>
 <script>
     const post_id = {{ post.post_id }}
     addEventListenersToElements(post_id);
+    refreshLike(post_id)
 
     refreshCommentList(post_id);
+
 </script>
 
 {% endblock %}

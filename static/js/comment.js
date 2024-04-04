@@ -124,26 +124,31 @@ function addDeleteButtonListener(btnDelete, postId, commentId) {
 }
 
 function addEventListenersToElements(postId) {
-    document.getElementById('comment-form').addEventListener('submit', function (event) {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        formData.append('post_id', postId)
-        fetch('/board/add_comment', {
-            method: 'POST',
-            body: formData
+    const commentForm = document.getElementById('comment-form')
+    if (commentForm) {
+        commentForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            formData.append('post_id', postId)
+            fetch('/board/add_comment', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    refreshCommentList(postId);
+                });
+        });
+    }
+
+    const textComments = document.getElementById('text-comments')
+    if (textComments) {
+        textComments.addEventListener('keypress', function (event) {
+            if (event.key === 'Enter') {
+                document.getElementById('btn-register').click();
+            }
         })
-            .then(response => response.json())
-            .then(data => {
-                refreshCommentList(postId);
-            });
-    });
-
-    document.getElementById('text-comments').addEventListener('keypress', function (event) {
-        if (event.key === 'Enter') {
-            document.getElementById('btn-register').click();
-        }
-    })
-
+    }
 }
 
 // 데이터 전송 객체 생성!

@@ -64,7 +64,7 @@ class Like(db.Model):
     post_id = db.Column(db.Integer, ForeignKey('post.post_id'), nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     updated_at = db.Column(db.DateTime, nullable=False)
-    deleted_at = db.Column(db.Boolean, nullable=False, default=False)
+    deleted = db.Column(db.Boolean, nullable=False, default=False)
 
     post = relationship('Post', back_populates='likes', lazy='joined')
     user = relationship('User', back_populates='likes', lazy='joined')

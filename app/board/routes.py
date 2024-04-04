@@ -43,7 +43,8 @@ def index():
     postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
 
     isLogin = current_user.is_authenticated
-    return render_template('board/index.html', pag=pag, postsCount=postsCount, keyword=keyword, cate=cate, stIdx=stIdx, sort=sort, isLogin=isLogin)
+    return render_template('board/index.html', pag=pag, postsCount=postsCount, keyword=keyword, cate=cate, stIdx=stIdx,
+                           sort=sort, isLogin=isLogin)
 
 
 @board_bp.route('/detail')
@@ -215,6 +216,60 @@ def update_comment():
         db.session.commit()
 
     return jsonify({'message': 'Comment deleted successfully'})
+
+
+@board_bp.route('/get_like', methods=['GET'])
+def get_like():
+    post_id = request.args.get('post_id', None, type=int)
+
+    like_img = url_for('static', filename='icon/00_like.png')
+    not_like_img = url_for('static', filename='icon/01_not_like.png')
+    is_login = current_user.is_authenticated
+    like_count = Like.query.filter_by(post_id=post_id, deleted=False).count()
+    is_like = False
+    if is_login:
+        user_id = current_user.user_id
+        like = Like.query.filter_by(user_id=user_id, post_id=post_id).first()
+        if like:
+            is_like = not like.deleted
+
+    return jsonify({'like_img': like_img, 'not_like_img': not_like_img, 'is_login': is_login, 'like_count': like_count,
+                    'is_like': is_like})
+
+
+@board_bp.route('/set_like', methods=['POST'])
+def set_like():
+    data = request.json
+
+    if not data:
+        print(f'data is null')
+        return jsonify({'message': 'fail to update'})
+
+    is_login = current_user.is_authenticated
+    if is_login == False:
+        return jsonify({'message': 'fail to update'})
+
+    user_id = current_user.user_id
+    is_like = data['is_like']
+    post_id = data['post_id']
+
+    like = Like.query.filter_by(user_id=user_id, post_id=post_id).first()
+    if like:
+        like.deleted = not is_like
+        like.updated_at = datetime.now()
+        db.session.commit()
+    else:
+        like = Like(user_id=user_id, post_id=post_id, deleted=False, created_at=datetime.now(), updated_at=datetime.now())
+        db.session.add(like)
+        db.session.commit()
+
+    like_img = url_for('static', filename='icon/00_like.png')
+    not_like_img = url_for('static', filename='icon/01_not_like.png')
+    like_count = Like.query.filter_by(post_id=post_id, deleted=False).count()
+    is_like = not like.deleted
+
+    return jsonify({'like_img': like_img, 'not_like_img': not_like_img, 'is_login': is_login, 'like_count': like_count,
+                    'is_like': is_like})
 
 
 @board_bp.route('/test_data', methods=['POST'])
