@@ -14407,7 +14407,7 @@ body {
     font-size: 14px;
 }
 
-@import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
+@import url("https://fonts.googleapis.com/earlyaccess/notosanskr.css");
 
 .notosanskr * {
     font-family: 'Noto Sans KR', sans-serif;
@@ -14444,7 +14444,7 @@ footer {
     background: rgba(94, 180, 117, 0.1);
 }
 
-@import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
+@import url('https://fonts.googleapis.com/earlyaccess/notosanskr.css');
 
 .notosanskr * {
     font-family: 'Noto Sans KR', sans-serif;

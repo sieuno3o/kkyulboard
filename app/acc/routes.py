@@ -108,13 +108,16 @@ def updateUser():
 
     newPass = request.form.get("changePass")
     print(f"newpassword is {newPass}")
-    if newPass and newPass != "********":
+    if newPass:
         current_user.password = sha512_hash(newPass)
         flash("패스워드가 업데이트 되었습니다", "info")
         changeData = True
 
     if changeData:
         db.session.commit()
+    else:
+        flash("변경된 데이터가 없습니다", "info")
+        print(request.form, request.files)
     return redirect(url_for('acc.profile'))
 
 
