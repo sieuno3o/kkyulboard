@@ -4,13 +4,13 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
 {% endblock %}
 {% block content %}
-<div class="customBody vertical">
+<div class="vertical" style="padding-top: 40px">
     <div class="customLogo loginLogoBox horizontal textOrange">
         <img class="navbarLogo marginRight16" src="/static/kkyul.png" alt="🍊">
-        뀰보드
+        <span style="font-family: 'EF_jejudoldam'">뀰보드</span>
         <img class="navbarLogo marginLeft16" src="/static/kkyul.png" alt="🍊">
     </div>
-    <div class=" vertical">
+    <div class="vertical">
         <form method="post" class="vertical">
             <input type="text" name="userid" placeholder="ID" class="customInput">
             <input type="password" name="userpw" placeholder="Password" class="customInput">
