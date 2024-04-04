@@ -7,7 +7,6 @@ from flask_login import LoginManager
 import os
 from flask_cors import CORS
 
-
 def create_app():
     app = Flask(__name__, template_folder='../templates', static_folder='../static')
     CORS(app)
@@ -35,17 +34,3 @@ def create_app():
     return app
 
 
-def create_app_with_dbname(dbname: str):
-    app = Flask(__name__, template_folder='../templates')
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    app.config['SQLALCHEMY_DATABASE_URI'] = \
-        'sqlite:///' + os.path.join(basedir, dbname)
-    db.init_app(app)
-
-    app.register_blueprint(acc_bp)
-    app.register_blueprint(board_bp)
-
-    with app.app_context():
-        db.create_all()
-
-    return app
