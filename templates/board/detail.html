@@ -19,11 +19,23 @@
             <div class="detail-mainText">
                 <div class="markdownView">{{post.body}}</div>
             </div>
-        
-            <div class="comment-text-line mt-3 mb-4">
-                <h3> 🍊 좋아요 {{ comCount}} 개</h3>
+
+            <div class="row comment-text-line d-flex justify-content-start align-content-center">
+                <div class="col-md-6">
+                    <div>
+                        <button class="btn btn-sm btn-like" data-like-on="{{ likeContext.like_on }}" data-login="{{ userContext.is_login }}">
+                            {% if likeContext.like_on == 1 %}
+                                <img class="likeImage" src="{{ url_for('static', filename='/like.png') }}" alt="">
+                            {% else %}
+                                <img class="likeImage" src="{{ url_for('static', filename='/unlike.png') }}" alt="">
+                            {% endif %}
+                        </button>
+                        <h3>좋아요 {{ likeContext.count }}</h3>
+                        <h3 class="mx-3">댓글 {{ comCount }} 개</h3>
+                    </div>
+                </div>
             </div>
-            
+
             <div class="commentBox text-center" style="background-color: rgba(208, 239, 201, 0.317); padding: 10px 0px 10px 30px">
                 {% for com in comments %}
                     <div class="row mt-2">
@@ -233,6 +245,48 @@
         // 현재 스크롤 위치를 저장합니다.
         sessionStorage.setItem('scrollPosition', window.scrollY);
     };
+
+    // 좋아요 버튼이 눌릴 때마다 값을 toggle하여 서버에 전달합니다.
+    function toggleLikeButton(button) {
+        // 로그인되어 있지 않으면 이벤트를 pass 한다.
+        const isLogin = button.getAttribute('data-login') === '1';
+        if (isLogin === false) {
+            return
+        }
+
+        const likeOn = button.getAttribute('data-like-on') === '1' ? '0' : '1';
+        fetch("/board/set_like", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                likeOn: likeOn
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // 서버 응답에 따른 처리를 수행합니다.
+            location.reload();
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+    }
+
+    // 좋아요 버튼에 클릭 이벤트 리스너를 추가합니다.
+    var likeButtons = document.querySelectorAll('.btn-like');
+    likeButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            toggleLikeButton(button);
+        });
+    });
+
 </script>
 
 {% endblock %}
