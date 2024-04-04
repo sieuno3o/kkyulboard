@@ -28,16 +28,19 @@
             <div class="detail-mainText">
                 <div class="markdownView">{{post.body}}</div>
             </div>
-            <div class="row comment-text-line d-flex justify-content-start align-content-center">
-                <div class="col-md-6">
-                    <div>
-                        <button class="btn btn-sm btn-like" data-like-on="{{ likeContext.like_on }}" data-login="{{ userContext.is_login }}">
+            <div class="row comment-text-line">
+                <div class="col-md-6 d-flex justify-content-start align-content-center">
+                    <div class="btn-like-container" >
+                        <button class="btn btn-sm btn-like" data-like-on="{{ likeContext.like_on }}"
+                                data-login="{{ userContext.is_login }}">
                             {% if likeContext.like_on == 1 %}
                                 <img class="likeImage" src="{{ url_for('static', filename='/like.png') }}" alt="">
                             {% else %}
                                 <img class="likeImage" src="{{ url_for('static', filename='/unlike.png') }}" alt="">
                             {% endif %}
                         </button>
+                    </div>
+                    <div>
                         <h3>좋아요 {{ likeContext.count }}</h3>
                         <h3 class="mx-3">댓글 {{ comCount }} 개</h3>
                     </div>
