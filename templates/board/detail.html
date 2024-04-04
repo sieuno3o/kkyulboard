@@ -62,6 +62,13 @@
     </div>
 </div>
 <div class="detail-mainText">
+    {% if post.problem_url %}
+    <div style="margin-bottom: 12px; font-size: 14px;">
+        <a class="textGray" href="{{ post.problem_url }}" target="_blank">
+            [문제URL] {{ post.problem_url }}
+        </a>
+    </div>
+    {% endif %}
     <div class="markdownView">{{post.body}}</div>
 </div>
 
