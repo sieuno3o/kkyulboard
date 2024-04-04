@@ -24,6 +24,7 @@
                 <option value="recent" {% if sort=='recent' %}selected{% endif %}>최신순</option>
                 <option value="old" {% if sort=='old' %}selected{% endif %}>오래된순</option>
                 <option value="click" {% if sort=='click' %}selected{% endif %}>조회순</option>
+                <option value="like" {% if sort=='like' %}selected{% endif %}>좋아요순</option>
             </select>
         </div>
 
@@ -38,6 +39,7 @@
             <th class="postWriter">작성자</th>
             <th class="postDate">작성일</th>
             <th class="postHit">조회수</th>
+            <th class="postLike">좋아요</th>
         </tr>
     </thead>
     <tbody class="text-center">
@@ -52,6 +54,7 @@
             <td>{{ notice.user.username }}</td>
             <td>{{ notice.updated_at.strftime("%Y/%m/%d %H:%M") }}</td>
             <td>{{ notice.click_count }}</td>
+            <td>{{ notice.likes | length }}</td>
         </tr>
         {% endfor %}
         {% for post in pag.items %}
@@ -65,6 +68,7 @@
             <td>{{ post.user.username }}</td>
             <td>{{ post.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
             <td>{{ post.click_count }}</td>
+            <td>{{ post.likes | length }}</td>
         </tr>
         {% endfor %}
 

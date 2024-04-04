@@ -1,9 +1,10 @@
 from datetime import datetime
+
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from flask_login import current_user
 from ..database import *
 from flask import flash
-
+from sqlalchemy import func
 
 board_bp = Blueprint('board', __name__, url_prefix='/board')
 
@@ -33,10 +34,21 @@ def index():
         posts_query = posts_query.order_by(Post.created_at.desc())
     elif sort == 'click':
         posts_query = posts_query.order_by(Post.click_count.desc())
+    elif sort == 'like':
+        like_counts_subquery = (
+            db.session.query(Like.post_id, func.count(Like.like_id).label('like_count'))
+            .filter(Like.deleted == False)  # deleted가 False인 좋아요만 고려
+            .group_by(Like.post_id)
+            .subquery()
+        )
+
+        posts_query = (
+            posts_query
+            .outerjoin(like_counts_subquery, Post.post_id == like_counts_subquery.c.post_id)
+            .order_by(like_counts_subquery.c.like_count.desc())
+        )
 
     pag = posts_query.paginate(page=page, per_page=perPage)
-
-    # stIdx = (pag.page - 1) * pag.per_page + 1
 
     stIdx = pag.total - (pag.page - 1) * pag.per_page
     postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
@@ -44,31 +56,22 @@ def index():
     isLogin = current_user.is_authenticated
     return render_template('board/index.html', pag=pag, notices=notices, postsCount=postsCount, keyword=keyword, cate=cate, stIdx=stIdx, sort=sort, isLogin=isLogin)
 
-
 @board_bp.route('/detail')
-def detail():
-    post_id = request.args.get('post_id', None, type=int)
-
-    if post_id:
-        return redirect(url_for('board.render_detail', post_id=post_id))
-    else:
+@board_bp.route('/detail/<post_id>')
+def detail(post_id=None):
+    if post_id is None:
         return redirect(url_for('board.index'))
 
-
-
-@board_bp.route('/detail/<post_id>')
-def render_detail(post_id):
     post = Post.query.filter_by(post_id=post_id).first()
+    # post_id에 해당하는 데이터가 없으면 index로 redirect
+    if not post:
+        flash("게시글이 존재하지 않습니다!", "info")
+        return redirect(url_for('board.index'))
 
     if post.secret_mode:
         if not (post.user_id == current_user.user_id or current_user.grade):
             flash("접근 권한이 없습니다!", "info")
-            return redirect(request.referrer)
-
-    # post_id에 해당하는 데이터가 없으면 index로 redirect
-    if not post:
-        flash("게시글이 존재하지 않습니다!", "info")
-        return redirect(request.referrer)
+            return redirect(url_for('board.index'))
 
     # click 카운트 추가
     post.click_count += 1
@@ -142,15 +145,15 @@ def createPost():
 @board_bp.route('/delete/<int:post_id>')
 def deletePost(post_id):
     post = Post.query.filter_by(post_id=post_id).first()
-    
+
     if not post:
         flash("해당 게시글을 찾을 수 없습니다.", 'danger')
         return redirect(url_for('board.index'))
-    
+
     if post.user != current_user:
         flash("삭제 권한이 없습니다.", 'danger')
         return redirect(url_for('board.index'))
-    
+
     db.session.delete(post)
     db.session.commit()
     flash("게시글이 삭제되었습니다.", "success")

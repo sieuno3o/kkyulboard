@@ -68,16 +68,19 @@
             <div class="detail-mainText">
                 <div class="markdownView">{{post.body}}</div>
             </div>
-            <div class="row comment-text-line d-flex justify-content-start align-content-center">
-                <div class="col-md-6">
-                    <div>
-                        <button class="btn btn-sm btn-like" data-like-on="{{ likeContext.like_on }}" data-login="{{ userContext.is_login }}">
+            <div class="row comment-text-line">
+                <div class="col-md-6 d-flex justify-content-start align-content-center">
+                    <div class="btn-like-container" >
+                        <button class="btn btn-sm btn-like" data-like-on="{{ likeContext.like_on }}"
+                                data-login="{{ userContext.is_login }}">
                             {% if likeContext.like_on == 1 %}
                                 <img class="likeImage" src="{{ url_for('static', filename='/like.png') }}" alt="">
                             {% else %}
                                 <img class="likeImage" src="{{ url_for('static', filename='/unlike.png') }}" alt="">
                             {% endif %}
                         </button>
+                    </div>
+                    <div>
                         <h3>좋아요 {{ likeContext.count }}</h3>
                         <h3 class="mx-3">댓글 {{ comCount }} 개</h3>
                     </div>
@@ -104,7 +107,7 @@
                         {% if userContext.id == com.user.user_id or userContext.grade == 1 %}
                         <div class="col-lg-2">
                             <button class="btn btn-sm btn-request">✏️</button>
-                            <button class="btn btn-sm btn-request" data-comm-id="{{ com.comment_id }}">❌</button>
+                            <button class="btn btn-sm btn-request" data-comm-id="{{ com.comment_id }}">🗑️</button>
                         </div>
                         {% endif %}
                     </div>
@@ -120,7 +123,7 @@
                         <div class="col-11">
                             <input type="hidden" name="postId" value="{{ post.post_id }}">
                             <textarea id="text-comments" class="form-control" rows="3" placeholder="남기실 말씀을 적어주세요."
-                                name="comments"></textarea>
+                                name="comments" required></textarea>
                         </div>
                         <div class="col-1">
                             <button id="btn-register" type="submit" class="btn btn-theme-color mt-2">등록</button>
