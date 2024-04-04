@@ -9,19 +9,30 @@
 {% endblock %}
 
 {% block content%}
-<div class="container">
-    <div class="center">
-        <div class="main">
-            <div class="boardTitle">
-                <h1>{{post.title}}</h1>
-                <p>작성자 {{post.user.username}}</p>
+<div class="detail-container">
+    <div class="detail-center">
+        <div class="detail-main">
+            <div class="detail-title">
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-size: 30px;"><b>{{post.title}}
+                        </b></span>
+                    <span>작성자 {{post.user.username}}
+                        | 2024. 04. 01. 12:47</span>
+                </div>
+                <div style="margin-right: 15px;">
+                    <span>조회수</span>&nbsp;10&nbsp;&nbsp;|&nbsp;<span></span>
+                    <span>좋아요</span>&nbsp;10&nbsp;&nbsp;|&nbsp;<span></span>
+                    <span>댓글</span>&nbsp;10<span></span>
+                </div>
             </div>
             <div class="detail-mainText">
                 <div class="markdownView">{{post.body}}</div>
             </div>
         
             <div class="comment-text-line mt-3 mb-4">
-                <h3> 🍊 좋아요 {{ comCount}} 개</h3>
+                <h3 id="like-count">🍊 좋아요 {{ comCount }}개</h3>
+                <h3>&nbsp;|&nbsp;</h3>
+                <h3 id="comment-count">댓글 5개</h3>
             </div>
             
             <div class="commentBox text-center" style="background-color: rgba(208, 239, 201, 0.317); padding: 10px 0px 10px 30px">
