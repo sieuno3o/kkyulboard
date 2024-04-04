@@ -48,7 +48,7 @@
             <td class="fw-bold">{% if notice.secret_mode %}임원공지{% else %}공지{% endif %}</td>
             <td class="fw-bold" style="text-align: left;">
                 <a class="board-td-custom" href="{{ url_for('board.detail', post_id=notice.post_id)}}">📢 {{
-                    notice.title }}</a>
+                    notice.title }} [{{ notice.comments | length }}]</a>
                 {% if notice.secret_mode %}🔒{% endif %}
             </td>
             <td>{{ notice.user.username }}</td>
@@ -62,7 +62,7 @@
             <td>{{ stIdx - loop.index0 }}</td>
             <td style="text-align: left;">
                 <a class="board-td-custom" href="{{ url_for('board.detail', post_id=post.post_id)}}">{{
-                    post.title }}</a>
+                    post.title }} [{{ post.comments | length }}]</a>
                 {% if post.secret_mode %}🔒{% endif %}
             </td>
             <td>{{ post.user.username }}</td>
