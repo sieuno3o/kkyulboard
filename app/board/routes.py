@@ -4,7 +4,6 @@ from flask_login import current_user
 from ..database import *
 from flask import flash
 
-
 board_bp = Blueprint('board', __name__, url_prefix='/board')
 
 @board_bp.route('/index')
@@ -33,6 +32,19 @@ def index():
         posts_query = posts_query.order_by(Post.created_at.desc())
     elif sort == 'click':
         posts_query = posts_query.order_by(Post.click_count.desc())
+    elif sort == 'like':
+        like_counts_subquery = (
+            db.session.query(Like.post_id, func.count(Like.like_id).label('like_count'))
+            .filter(Like.deleted == False)  # deleted가 False인 좋아요만 고려
+            .group_by(Like.post_id)
+            .subquery()
+        )
+
+        posts_query = (
+            posts_query
+            .outerjoin(like_counts_subquery, Post.post_id == like_counts_subquery.c.post_id)
+            .order_by(like_counts_subquery.c.like_count.desc())
+        )
 
     pag = posts_query.paginate(page=page, per_page=perPage)
 
@@ -131,15 +143,15 @@ def createPost():
 @board_bp.route('/delete/<int:post_id>')
 def deletePost(post_id):
     post = Post.query.filter_by(post_id=post_id).first()
-    
+
     if not post:
         flash("해당 게시글을 찾을 수 없습니다.", 'danger')
         return redirect(url_for('board.index'))
-    
+
     if post.user != current_user:
         flash("삭제 권한이 없습니다.", 'danger')
         return redirect(url_for('board.index'))
-    
+
     db.session.delete(post)
     db.session.commit()
     flash("게시글이 삭제되었습니다.", "success")
