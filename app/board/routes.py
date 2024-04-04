@@ -81,13 +81,31 @@ def render_detail(post_id):
     userContext = {
         'id': -1,
         'grade': 0,
+        'is_login': 0
     }
     if current_user.is_authenticated:
         userContext['id'] = current_user.user_id
         userContext['grade'] = current_user.grade
+        userContext['is_login'] = 1
+
+    # 유저의 좋아요 클릭 상태 및 개수
+    likeContext = {
+        'like_on': 0,
+        'count': 0
+    }
+    like = Like.query.filter_by(user_id=userContext['id'], post_id=post_id).first()
+    likeCount = Like.query.filter_by(post_id=post_id, deleted=False).count()
+
+    # 좋아요가 없거나 취소 상태면 0, 좋아요가 있으면 1을 전달
+    if not like or like.deleted:
+        likeContext['like_on'] = 0
+    else:
+        likeContext['like_on'] = 1
+    likeContext['count'] = likeCount
+    print(likeContext)
 
     return render_template('board/detail.html', post=post, comments=comments, comCount=len(comments),
-                           userContext=userContext)
+                           userContext=userContext, likeContext=likeContext)
 
 
 @board_bp.route('/create', methods=["GET", "POST"])
@@ -202,3 +220,34 @@ def update_comment():
     flash("댓글이 업데이트되었습니다", "info")
     return jsonify({'message': 'Comment deleted successfully'})
 
+
+@board_bp.route('/set_like', methods=["POST"])
+def set_like():
+    data = request.json
+    if not data:
+        print(f'data is null')
+        return jsonify({'message': 'fail to add like'})
+
+    likeOn = data['likeOn']
+    postId = request.referrer.split("/")[-1]
+
+    # 로그인되지 않았다면 진행하지 않는다
+    if not current_user.is_authenticated:
+        return redirect(request.referrer)
+
+    userId = current_user.user_id
+    deleted = True if likeOn == '0' else False
+
+    like = Like.query.filter_by(user_id=userId, post_id=postId).first()
+    if like:
+        # 좋아요가 존재하면 deleted 컬럼 수정 후 갱신
+        like.deleted = deleted
+        like.updated_at = datetime.now()
+        db.session.commit()
+    else:
+        like = Like(user_id=userId, post_id=postId,
+                    created_at=datetime.now(), updated_at=datetime.now(), deleted=deleted)
+        db.session.add(like)
+        db.session.commit()
+
+    return jsonify({'message': 'Like set successfully'})
