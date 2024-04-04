@@ -1,56 +1,69 @@
 {% extends "layout.html" %}
 {% block title %}CREATE POST{% endblock %}
 {% block head %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 {% endblock %}
 {% block content %}
-<div class="customBody">
-    <form id="createPostForm" method="post">
-        <div class="horizontal margin_bottom">
-            <textarea name="title" id="custom_title" class="margin_right" placeholder="제목을 입력해 주세요" required></textarea>
-            <div class="horizontal">
-                <div class="horizontal margin_right">
-                    <input type="checkbox" name="secretCheck" id="check1">
-                    <label for="check1" class="marginRight16"></label>
-                    비밀글
-                </div>
-                
-                    {% if current_user.grade == 1 %}
-                    <div class="horizontal margin_right">
-                        <input type="checkbox" name="noticeCheck" id="check2">
-                        <label for="check2" class="marginRight16 marginLeft16"></label>
-                        공지글
-                    </div>
-                    {% endif %}
-                
-                <button type="submit" class="button1" onclick="submitCreatePost()">등록</button>
+<form id="createPostForm" method="post">
+    <div class="horizontal margin_bottom">
+        <textarea name="title" id="custom_title" class="margin_right" placeholder="제목을 입력해 주세요" required></textarea>
+        <div class="horizontal">
+            <div class="horizontal margin_right">
+                <input type="checkbox" name="secretCheck" id="check1">
+                <label for="check1" class="marginRight8"></label>
+                비밀글
             </div>
-        </div>
-        <div>
-            <textarea name="problemUrl" id="custom_url" placeholder="문제 URL을 입력해 주세요"></textarea>
-        </div>
-        <div class="row">
-            <div class="col-lg-6">
-                <textarea name="body" id="custom_contents" class="markdownInput" placeholder="내용을 입력해 주세요" required></textarea>
+
+            {% if current_user.grade == 1 %}
+            <div class="horizontal margin_right">
+                <input type="checkbox" name="noticeCheck" id="check2">
+                <label for="check2" class="marginRight8 marginLeft16"></label>
+                공지글
             </div>
-            <div class="col-lg-6">
-                <div class="markdownPreview"></div>
-            </div>
+            {% endif %}
+
+            <button type="submit" class="buttonGreen" onclick="submitCreatePost()">등록</button>
         </div>
-    </form>
-</div>
+    </div>
+    <div>
+        <textarea name="problemUrl" id="custom_url" placeholder="문제 URL을 입력해 주세요" class="margin_bottom16"></textarea>
+    </div>
+    <div class="row">
+        <div class="col-lg-6">
+            <textarea name="body" id="custom_contents" class="customContents markdownInput" placeholder="내용을 입력해 주세요"
+                required></textarea>
+        </div>
+        <div class="col-lg-6 previewArea">
+            <div class="markdownPreview"></div>
+        </div>
+    </div>
+</form>
+
 <script>
-    
+    // 입력란의 높이를 자동으로 조절하는 함수
+    function autoResizeTextarea() {
+        const textarea = document.getElementById("custom_contents");
+        textarea.style.height = "auto"; // 높이 초기화
+        textarea.style.height = "400px"; // 최초 높이 설정
+        textarea.style.height = Math.min(textarea.scrollHeight, window.innerHeight - 50) + "px"; // 화면 높이와 스크롤 높이 중 작은 값으로 설정
+    }
+
+    // 입력란에 내용이 변경될 때마다 호출되도록 이벤트 리스너 추가
+    document.getElementById("custom_contents").addEventListener("input", autoResizeTextarea);
+
+    // 페이지 로드 시에도 한 번 실행하여 초기 높이를 설정
+    window.addEventListener("load", autoResizeTextarea);
+
     // textarea 요소와 미리보기를 표시할 요소를 가져옵니다.
     var markdownInput = document.querySelector('.markdownInput');
     var markdownPreview = document.querySelector('.markdownPreview');
 
     // textarea에 입력 내용이 변경될 때마다 미리보기를 업데이트합니다.
-    markdownInput.addEventListener('input', function() {
+    markdownInput.addEventListener('input', function () {
         // 입력된 마크다운 텍스트를 가져와서 HTML로 변환하여 미리보기 요소에 적용합니다.
         markdownPreview.innerHTML = marked(markdownInput.value);
         markdownPreview.querySelectorAll('pre code').forEach((block) => {
@@ -59,13 +72,13 @@
     });
 
     // 사용자가 엔터를 입력하면 미리보기를 업데이트합니다.
-    markdownInput.addEventListener('keydown', function(event) {
+    markdownInput.addEventListener('keydown', function (event) {
         if (event.keyCode === 13) {
             // Enter 키를 누르면 입력 내용이 변경되므로 input 이벤트를 발생시켜 미리보기를 업데이트합니다.
             var inputEvent = new Event('input');
             console.log(1);
             markdownInput.dispatchEvent(inputEvent);
-        }else if(event.keyCode === 9) {
+        } else if (event.keyCode === 9) {
             event.preventDefault(); // 기본 동작(탭 이동)을 막습니다.
             var cursorPos = markdownInput.selectionStart; // 커서의 위치를 가져옵니다.
             var textBeforeCursor = markdownInput.value.substring(0, cursorPos); // 커서 앞의 텍스트를 가져옵니다.
@@ -76,8 +89,8 @@
             markdownInput.focus(); // textarea에 포커스를 맞춥니다.
         }
     });
-    
-    
-    
+
+
+
 </script>
 {% endblock %}

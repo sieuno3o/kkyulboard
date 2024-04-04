@@ -131,6 +131,7 @@
 
     </div>
 
+    {% if request.endpoint not in ['board.createPost', 'board.editPost'] %}
     <footer class="vertical">
         <div class="textGray fs-6" style="font-family: 'IM_Hyemin-Bold'">해방의 날까지 🕊️</div>
         <div id="countdown" class="textGray fs-6" style="font-family: 'IM_Hyemin-Bold'">
@@ -144,6 +145,7 @@
             all rights reserved.
         </div>
     </footer>
+    {% endif %}
 </body>
 
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
