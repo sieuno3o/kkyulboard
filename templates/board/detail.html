@@ -107,7 +107,7 @@
                         {% if userContext.id == com.user.user_id or userContext.grade == 1 %}
                         <div class="col-lg-2">
                             <button class="btn btn-sm btn-request">✏️</button>
-                            <button class="btn btn-sm btn-request" data-comm-id="{{ com.comment_id }}">❌</button>
+                            <button class="btn btn-sm btn-request" data-comm-id="{{ com.comment_id }}">🗑️</button>
                         </div>
                         {% endif %}
                     </div>
@@ -123,7 +123,7 @@
                         <div class="col-11">
                             <input type="hidden" name="postId" value="{{ post.post_id }}">
                             <textarea id="text-comments" class="form-control" rows="3" placeholder="남기실 말씀을 적어주세요."
-                                name="comments"></textarea>
+                                name="comments" required></textarea>
                         </div>
                         <div class="col-1">
                             <button id="btn-register" type="submit" class="btn btn-theme-color mt-2">등록</button>
