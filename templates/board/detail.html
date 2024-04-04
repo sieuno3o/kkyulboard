@@ -28,7 +28,9 @@
                 {% for com in comments %}
                     <div class="row mt-2">
                         <div class="col-lg-2"><b>{{com.user.username}}</b></div>
-                        <div class="col-lg-7 comments text-start"><input type="text" class="commentInput" data-comm-id="{{ com.comment_id }}" style="border: none; background-color: transparent;" value="{{com.comments}}" readonly></div>
+                        <div class="col-lg-7 comments text-start">
+                            <input type="text" class="commentInput" data-comm-id="{{ com.comment_id }}" style="border: none; background-color: transparent; width:100%;" value="{{com.comments}}" readonly>
+                        </div>
                         <div class="col-lg-1 createTime" data-created-at="{{com.created_at}}"></div>
                         <div class="col-lg-2">
                             <button class="btn btn-sm btn-request">✏️</button>

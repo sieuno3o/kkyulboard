@@ -75,7 +75,7 @@ def render_detail(post_id):
     post.click_count += 1
     db.session.commit()
     isLogin = current_user.is_authenticated
-    comments = Comment.query.filter_by(post_id=post_id).order_by(Comment.created_at.desc()).all()
+    comments = Comment.query.filter_by(post_id=post_id).order_by(Comment.created_at.asc()).all()
     return render_template('board/detail.html', isLogin=isLogin, post=post, comments=comments, comCount=len(comments))
 
 
