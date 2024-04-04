@@ -14023,6 +14023,18 @@ input::placeholder {
     margin-right: 8px;
 }
 
+.margin_left_4 {
+    margin-left: 4px;
+}
+
+.margin_left_8 {
+    margin-left: 8px;
+}
+
+.margin_bottom8 {
+    margin-bottom: 8px;
+}
+
 .margin_bottom16 {
     margin-bottom: 16px;
 }
@@ -14130,6 +14142,34 @@ button.buttonGreen {
     padding-bottom: 8px;
     padding-left: 16px;
     padding-right: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+button.buttonDanger2 {
+    border: 0;
+    outline: none;
+    font-size: 12px;
+    background: #FF6E80;
+    color: white;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+button.buttonGreen2 {
+    border: 0;
+    outline: none;
+    font-size: 12px;
+    background: #5EB475;
+    color: white;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
     cursor: pointer;
     border-radius: 8px;
 }
@@ -14346,16 +14386,16 @@ body {
 }
 
 .commentImage {
-    width: 80px;
-    height: 80px;
+    width: 32px;
+    height: 32px;
     background-color: #D9D9D9;
     border-radius: 20px 20px / 20px 20px;
     overflow: hidden;
 }
 
 .commentImage2 {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     background-color: #D9D9D9;
     border-radius: 5px 5px / 5px 5px;
     overflow: hidden;
@@ -14364,6 +14404,7 @@ body {
 .commentText {
     color: #222222;
     font-weight: bold;
+    font-size: 14px;
 }
 
 @import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
@@ -14445,5 +14486,6 @@ footer {
     height: 25px;
     overflow: hidden;
 }
+
 
 /*# sourceMappingURL=bootstrap.min.css.map */

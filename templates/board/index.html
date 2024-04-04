@@ -52,7 +52,7 @@
                 {% if notice.secret_mode %}🔒{% endif %}
             </td>
             <td>{{ notice.user.username }}</td>
-            <td>{{ notice.updated_at.strftime("%Y/%m/%d %H:%M") }}</td>
+            <td>{{ notice.created_at.strftime("%Y/%m/%d %H:%M") }}</td>
             <td>{{ notice.click_count }}</td>
             <td>{{ notice.likes | length }}</td>
         </tr>
@@ -66,7 +66,8 @@
                 {% if post.secret_mode %}🔒{% endif %}
             </td>
             <td>{{ post.user.username }}</td>
-            <td>{{ post.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+            <td>{{ post.created_at.strftime("%Y/%m/%d %H:%M") }}
+            </td>
             <td>{{ post.click_count }}</td>
             <td>{{ post.likes | length }}</td>
         </tr>
