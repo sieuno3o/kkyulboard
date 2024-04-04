@@ -46,30 +46,30 @@ def index():
     return render_template('board/index.html', pag=pag, notices=notices, postsCount=postsCount, keyword=keyword, cate=cate, stIdx=stIdx, sort=sort, isLogin=isLogin)
 
 
-@board_bp.route('/detail')
-def detail():
-    post_id = request.args.get('post_id', None, type=int)
+# def detail():
+#     post_id = request.args.get('post_id', None, type=int)
+#
+#     if post_id:
+#         return redirect(url_for('board.render_detail', post_id=post_id))
+#     else:
+#         return redirect(url_for('board.index'))
 
-    if post_id:
-        return redirect(url_for('board.render_detail', post_id=post_id))
-    else:
+@board_bp.route('/detail')
+@board_bp.route('/detail/<post_id>')
+def detail(post_id=None):
+    if post_id is None:
         return redirect(url_for('board.index'))
 
-
-
-@board_bp.route('/detail/<post_id>')
-def render_detail(post_id):
     post = Post.query.filter_by(post_id=post_id).first()
+    # post_id에 해당하는 데이터가 없으면 index로 redirect
+    if not post:
+        flash("게시글이 존재하지 않습니다!", "info")
+        return redirect(url_for('board.index'))
 
     if post.secret_mode:
         if not (post.user_id == current_user.user_id or current_user.grade):
             flash("접근 권한이 없습니다!", "info")
-            return redirect(request.referrer)
-
-    # post_id에 해당하는 데이터가 없으면 index로 redirect
-    if not post:
-        flash("게시글이 존재하지 않습니다!", "info")
-        return redirect(request.referrer)
+            return redirect(url_for('board.index'))
 
     # click 카운트 추가
     post.click_count += 1
