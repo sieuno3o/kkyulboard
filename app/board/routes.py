@@ -42,15 +42,6 @@ def index():
     isLogin = current_user.is_authenticated
     return render_template('board/index.html', pag=pag, notices=notices, postsCount=postsCount, keyword=keyword, cate=cate, stIdx=stIdx, sort=sort, isLogin=isLogin)
 
-
-# def detail():
-#     post_id = request.args.get('post_id', None, type=int)
-#
-#     if post_id:
-#         return redirect(url_for('board.render_detail', post_id=post_id))
-#     else:
-#         return redirect(url_for('board.index'))
-
 @board_bp.route('/detail')
 @board_bp.route('/detail/<post_id>')
 def detail(post_id=None):
