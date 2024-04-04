@@ -13,36 +13,47 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/comment.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/detail.css') }}">
     <style>
-        @import url(//fonts.googleapis.com/earlyaccess/notosanskr.css); 
-        .notosanskr * { 
-        font-family: 'Noto Sans KR', sans-serif;
+        @import url(//fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+        .notosanskr * {
+            font-family: 'Noto Sans KR', sans-serif;
         }
-        @font-face { /* 제주 돌담 */
+
+        @font-face {
+            /* 제주 돌담 */
             font-family: 'EF_jejudoldam';
             src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2210-EF@1.0/EF_jejudoldam.woff2') format('woff2');
             font-weight: normal;
             font-style: normal;
         }
-        @font-face { /* 혜민 */
+
+        @font-face {
+            /* 혜민 */
             font-family: 'IM_Hyemin-Bold';
             src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2106@1.1/IM_Hyemin-Bold.woff2') format('woff');
             font-weight: normal;
             font-style: normal;
         }
 
-        *{
+        * {
             font-family: 'Noto Sans KR';
             cursor: none;
         }
+
         .cursor {
             position: fixed;
-            width: 32px; /* 커서 이미지의 너비 */
-            height: 32px; /* 커서 이미지의 높이 */
-            background-image: url('{{ url_for("static", filename="star.gif") }}'); /* 커서 이미지 경로 */
+            width: 32px;
+            /* 커서 이미지의 너비 */
+            height: 32px;
+            /* 커서 이미지의 높이 */
+            background-image: url('{{ url_for("static", filename="star.gif") }}');
+            /* 커서 이미지 경로 */
             background-size: cover;
-            pointer-events: none; /* 커서를 클릭 가능하게 만들지 않음 */
+            pointer-events: none;
+            /* 커서를 클릭 가능하게 만들지 않음 */
         }
-         /* 버튼 스타일 */
+
+        /* 버튼 스타일 */
         .scroll-btn {
             position: fixed;
             bottom: 20px;
@@ -59,8 +70,10 @@
             text-align: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             transition: background-color 0.3s;
-            display: none; /* 초기에는 숨김 상태로 설정 */
+            display: none;
+            /* 초기에는 숨김 상태로 설정 */
         }
+
         #scrollToTopBtn {
             bottom: 120px;
         }
@@ -68,6 +81,7 @@
         #scrollToBottomBtn {
             bottom: 20px;
         }
+
         .scroll-btn:hover {
             background-color: #0057b333;
         }
@@ -96,26 +110,40 @@
         </div>
     </nav>
 
-    <div class="customBody">
+    <div class="content-wrap customBody">
         {% block content %}
         {% endblock %}
-    </div>
 
-    <div class="alertcon">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }} customAlert" role="alert">
-            {{ message }}
+        <div class="alertcon">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} customAlert" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
         </div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
+
+        <button id="scrollToTopBtn" class="scroll-btn" onclick="scrollToTop()">&#8593;</button>
+        <button id="scrollToBottomBtn" class="scroll-btn" onclick="scrollToBottom()">&#8595;</button>
+
     </div>
 
-    <button id="scrollToTopBtn" class="scroll-btn" onclick="scrollToTop()">&#8593;</button>
-    <button id="scrollToBottomBtn" class="scroll-btn" onclick="scrollToBottom()">&#8595;</button>
-    
+    <footer class="vertical">
+        <div class="textGray fs-6" style="font-family: 'IM_Hyemin-Bold'">해방의 날까지 🕊️</div>
+        <div id="countdown" class="textGray fs-6" style="font-family: 'IM_Hyemin-Bold'">
+            <span class="textOrange fs-5">0</span>일 <span class="textOrange fs-5">0</span>시간 <span
+                class="textOrange fs-5">0</span>분
+            <span class="textRed fs-5">N</span>초
+        </div>
+        <div class="textGray fst-italic fs-7">
+            © 2024. 뀰
+            <span class="fs-8">(김시은, 이상일, 정희경, 한승협)</span>
+            all rights reserved.
+        </div>
+    </footer>
 </body>
 
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
@@ -148,18 +176,18 @@
     });
 
     // 스크롤 이벤트 리스너 추가
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', function () {
         var scrollToTopBtn = document.getElementById('scrollToTopBtn');
         var scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
         var scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
         var scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight;
         var clientHeight = document.documentElement.clientHeight || window.innerHeight;
 
-        if(window.scrollY == 0){
+        if (window.scrollY == 0) {
             scrollToTopBtn.style.display = 'none';
-        }else if(scrollTop + clientHeight >= scrollHeight){
+        } else if (scrollTop + clientHeight >= scrollHeight) {
             scrollToBottomBtn.style.display = 'none';
-        }else{
+        } else {
             scrollToBottomBtn.style.display = 'block';
             scrollToTopBtn.style.display = 'block';
         }
@@ -173,6 +201,38 @@
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 </script>
+
+<script>
+    // 목표 날짜 설정 (YYYY, MM (0-11), DD)
+    // 자바스크립트는 월을 0부터 시작으로 계산하므로 6월은 5로 설정
+    const countDownDate = new Date("2024-06-21T00:00:00+09:00").getTime(); // 서울 시간 기준
+
+    // 1초마다 업데이트 되는 타이머
+    let x = setInterval(function () {
+
+        // 현재 날짜와 시간을 가져옴
+        let now = new Date().getTime();
+
+        // 목표 날짜까지 남은 시간 계산
+        let distance = countDownDate - now;
+
+        // 일, 시간, 분, 초 계산
+        let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        // 결과를 id="countdown"인 태그에 표시
+        document.getElementById("countdown").innerHTML = "<span class='textOrange fs-5'>" + days + "</span>일 <span class='textOrange fs-5'>" + hours + "</span>시간 <span class='textOrange fs-5'>" + minutes + "</span>분 <span class='textRed fs-5'>" + seconds + "</span>초";
+
+        // 카운트다운이 완료되면 텍스트 출력
+        if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("countdown").innerHTML = "카운트다운 완료";
+        }
+    }, 1000);
+</script>
+
 
 </html>
 
