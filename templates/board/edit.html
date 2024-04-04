@@ -1,36 +1,122 @@
 {% extends "layout.html" %}
 {% block title %}CREATE POST{% endblock %}
 {% block head %}
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <style>
+        .fixed-buttons {
+            position: fixed;
+            top: 100px;
+            background-color: #77ff0078;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 20px;
+            line-height: 40px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+            z-index: 1; /* 다른 요소 위에 고정 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .fixed-buttons:hover{
+            opacity: 0.5;
+        }
+        .check-button{
+            right: 80px;
+        }
+        .back-button{
+            right: 30px;
+        }
+    </style>
 {% endblock %}
 {% block content %}
 <div class="customBody">
-    <form id="editPostForm" method="post">
+    <form id="createPostForm" method="post">
         <div class="horizontal margin_bottom">
-            <textarea name="title" id="custom_title" class="margin_right" placeholder="제목을 입력해 주세요"
-                required>{{ post.title }}</textarea>
+            <textarea name="title" id="custom_title" class="margin_right" placeholder="제목을 입력해 주세요" required>{{ post.title }}</textarea>
             <div class="horizontal">
                 <div class="horizontal margin_right">
-                    <input name="secretCheck" type="checkbox" id="check1" {% if post.secret_mode %}checked{% endif %}>
-                    <label for="check1" class="margin_right_2"></label>
+                    <input type="checkbox" name="secretCheck" id="check1" {% if post.secret_mode %}checked{% endif %}>
+                    <label for="check1" class="marginRight16"></label>
                     비밀글
-                    <input type="hidden" name="secretValue" id="secretValue"> <!-- hidden input 추가 -->
                 </div>
-                <button type="submit" class="button1" onclick="submitEditPost()">수정</button>
+                
+                    {% if current_user.grade == 1 %}
+                    <div class="horizontal margin_right">
+                        <input type="checkbox" name="noticeCheck" id="check2" {% if post.notice_mode %}checked{% endif %}>
+                        <label for="check2" class="marginRight16 marginLeft16"></label>
+                        공지글
+                    </div>
+                    {% endif %}
+                
+                <button type="submit" class="fixed-buttons check-button" title="수정완료" onclick="submitCreatePost()">✅</button>
+                <button type="button" class="fixed-buttons back-button" title="뒤로가기" onclick="goBackPage()">🔙</button>
             </div>
         </div>
         <div>
             <textarea name="problemUrl" id="custom_url" placeholder="문제 URL을 입력해 주세요">{{ post.problem_url }}</textarea>
         </div>
-        <textarea name="body" id="custom_contents" placeholder="내용을 입력해 주세요" required>{{ post.body }}</textarea>
+        <div class="row">
+            <div class="col-lg-6">
+                <textarea name="body" id="custom_contents" class="markdownInput" placeholder="내용을 입력해 주세요" required>{{ post.body }}</textarea>
+            </div>
+            <div class="col-lg-6">
+                <div class="markdownPreview"></div>
+            </div>
+        </div>
     </form>
 </div>
 <script>
-    function submitEditPost() {
-        var checkBox = document.getElementById("check1");
-        var secretValue = checkBox.checked; // 체크박스가 체크되었는지 여부에 따라 true 또는 false 값을 가져옴
-        document.getElementById("secretValue").value = secretValue; // hidden input에 값을 설정
-        document.getElementById("editPostForm").submit();
+    
+    // textarea 요소와 미리보기를 표시할 요소를 가져옵니다.
+    var markdownInput = document.querySelector('.markdownInput');
+    var markdownPreview = document.querySelector('.markdownPreview');
+
+    // textarea에 입력 내용이 변경될 때마다 미리보기를 업데이트합니다.
+    markdownInput.addEventListener('input', function() {
+        // 입력된 마크다운 텍스트를 가져와서 HTML로 변환하여 미리보기 요소에 적용합니다.
+        markdownPreview.innerHTML = marked(markdownInput.value);
+        markdownPreview.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+        });
+    });
+
+    // 사용자가 엔터를 입력하면 미리보기를 업데이트합니다.
+    markdownInput.addEventListener('keydown', function(event) {
+        if (event.keyCode === 13) {
+            // Enter 키를 누르면 입력 내용이 변경되므로 input 이벤트를 발생시켜 미리보기를 업데이트합니다.
+            var inputEvent = new Event('input');
+            markdownInput.dispatchEvent(inputEvent);
+        }else if(event.keyCode === 9) {
+            event.preventDefault(); // 기본 동작(탭 이동)을 막습니다.
+            var cursorPos = markdownInput.selectionStart; // 커서의 위치를 가져옵니다.
+            var textBeforeCursor = markdownInput.value.substring(0, cursorPos); // 커서 앞의 텍스트를 가져옵니다.
+            var textAfterCursor = markdownInput.value.substring(cursorPos); // 커서 뒤의 텍스트를 가져옵니다.
+            markdownInput.value = textBeforeCursor + '\t' + textAfterCursor; // 탭 문자를 삽입합니다.
+            markdownInput.selectionStart = cursorPos + 1; // 커서를 이동합니다.
+            markdownInput.selectionEnd = cursorPos + 1;
+            markdownInput.focus(); // textarea에 포커스를 맞춥니다.
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const markdownView = document.querySelector('.markdownPreview');
+        const markdownContent = document.querySelector('.markdownInput').textContent;
+        markdownPreview.innerHTML = marked(markdownContent);
+    });
+    
+    function goBackPage(){
+        window.history.back();
     }
+    
 </script>
 {% endblock %}

@@ -4,9 +4,8 @@ from flask_login import current_user
 from ..database import *
 from flask import flash
 
+
 board_bp = Blueprint('board', __name__, url_prefix='/board')
-
-
 
 @board_bp.route('/index')
 def index():
@@ -140,19 +139,35 @@ def createPost():
         return redirect(url_for('board.index'))
     return render_template('board/create.html')
 
+@board_bp.route('/delete/<int:post_id>')
+def deletePost(post_id):
+    post = Post.query.filter_by(post_id=post_id).first()
+    
+    if not post:
+        flash("해당 게시글을 찾을 수 없습니다.", 'danger')
+        return redirect(url_for('board.index'))
+    
+    if post.user != current_user:
+        flash("삭제 권한이 없습니다.", 'danger')
+        return redirect(url_for('board.index'))
+    
+    db.session.delete(post)
+    db.session.commit()
+    flash("게시글이 삭제되었습니다.", "success")
+    return redirect(url_for('board.index'))
+
+
 
 @board_bp.route('/edit/<int:post_id>', methods=["GET", "POST"])
 def editPost(post_id):
     # 해당 ID의 게시글 찾기
     post = Post.query.filter_by(post_id=post_id).first()
-
     # 게시글이 존재하지 않으면 메인 페이지로 리디렉션
     if not post:
         flash("해당 게시글을 찾을 수 없습니다.", 'danger')
         return redirect(url_for('board.index'))
-
     # 현재 로그인한 사용자가 게시글의 작성자가 아니면 메인 페이지로 리디렉션
-    if post.user_id != current_user.user_id:
+    if post.user != current_user:
         flash("수정 권한이 없습니다.", 'danger')
         return redirect(url_for('board.index'))
 
@@ -169,7 +184,6 @@ def editPost(post_id):
         post.problem_url = problemUrl
         post.body = body
         post.updated_at = datetime.now()
-
         db.session.commit()
 
         flash("게시글이 수정되었습니다.", "success")

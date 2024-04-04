@@ -21,6 +21,9 @@
 
 .detail-mainText {
     padding: 30px;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    border-bottom: 3px solid #fabe57;
 }
 
 .row {
