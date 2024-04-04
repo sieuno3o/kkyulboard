@@ -1,6 +1,6 @@
 **/__pycache__/
-# *.db
+*.db
 .vscode/
 venv/
 .DS_Store
-# static/uploads/userpic/
+static/uploads/userpic/
