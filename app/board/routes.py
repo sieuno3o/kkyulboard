@@ -36,8 +36,6 @@ def index():
 
     pag = posts_query.paginate(page=page, per_page=perPage)
 
-    # stIdx = (pag.page - 1) * pag.per_page + 1
-
     stIdx = pag.total - (pag.page - 1) * pag.per_page
     postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
 

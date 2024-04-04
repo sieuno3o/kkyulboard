@@ -38,6 +38,7 @@
             <th class="postWriter">작성자</th>
             <th class="postDate">작성일</th>
             <th class="postHit">조회수</th>
+            <th class="postLike">좋아요</th>
         </tr>
     </thead>
     <tbody class="text-center">
@@ -52,6 +53,7 @@
             <td>{{ notice.user.username }}</td>
             <td>{{ notice.updated_at.strftime("%Y/%m/%d %H:%M") }}</td>
             <td>{{ notice.click_count }}</td>
+            <td>{{ notice.likes | length }}</td>
         </tr>
         {% endfor %}
         {% for post in pag.items %}
@@ -65,6 +67,7 @@
             <td>{{ post.user.username }}</td>
             <td>{{ post.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
             <td>{{ post.click_count }}</td>
+            <td>{{ post.likes | length }}</td>
         </tr>
         {% endfor %}
 

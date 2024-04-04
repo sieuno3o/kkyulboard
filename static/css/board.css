@@ -9,7 +9,7 @@
 }
 
 .table th:nth-child(2) {
-    width: 56%;
+    width: 52%;
 }
 
 .table th:nth-child(3) {
@@ -17,10 +17,14 @@
 }
 
 .table th:nth-child(4) {
-    width: 16%;
+    width: 12%;
 }
 
 .table th:nth-child(5) {
+    width: 8%;
+}
+
+.table th:nth-child(6) {
     width: 8%;
 }
 
