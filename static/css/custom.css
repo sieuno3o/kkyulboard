@@ -14304,4 +14304,26 @@ body{
 .noticePost > td{
     background-color: rgba(94, 180, 117, 0.1);
 }
+
+.commentImage {
+    width: 80px;
+    height: 80px;
+    background-color: #D9D9D9;
+    border-radius: 20px 20px / 20px 20px;
+    overflow: hidden;
+}
+
+.commentImage2 {
+    width: 30px;
+    height: 30px;
+    background-color: #D9D9D9;
+    border-radius: 5px 5px / 5px 5px;
+    overflow: hidden;
+}
+
+.commentText {
+    color: #222222;
+    font-weight: bold;
+}
+
 /*# sourceMappingURL=bootstrap.min.css.map */

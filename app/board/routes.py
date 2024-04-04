@@ -76,16 +76,18 @@ def render_detail(post_id):
     db.session.commit()
     comments = Comment.query.filter_by(post_id=post_id).order_by(Comment.created_at.asc()).all()
 
-    # 로그인한 사용자 id와 등급을 전달
-    current_user_id = -1
-    grade = 0
+    # 로그인 사용자 정보 전달
+    # 로그인되지 않은 경우 current_user가 None이기 때문에 따로 관리 필요
+    userContext = {
+        'id': -1,
+        'grade': 0,
+    }
     if current_user.is_authenticated:
-        current_user_id = current_user.user_id
-        grade = current_user.grade
-
+        userContext['id'] = current_user.user_id
+        userContext['grade'] = current_user.grade
 
     return render_template('board/detail.html', post=post, comments=comments, comCount=len(comments),
-                           currentUserId=current_user_id, grade=grade)
+                           userContext=userContext)
 
 
 @board_bp.route('/create', methods=["GET", "POST"])

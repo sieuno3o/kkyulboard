@@ -27,12 +27,20 @@
             <div class="commentBox text-center" style="background-color: rgba(208, 239, 201, 0.317); padding: 10px 0px 10px 30px">
                 {% for com in comments %}
                     <div class="row mt-2">
-                        <div class="col-lg-2"><b>{{com.user.username}}</b></div>
+{#                        <div class="col-lg-2 horizontal text-start">#}
+                        <div class="col-lg-2 vertical text-start">
+                            {% if com.user.userpic %}
+                                <img class="commentImage" src="{{ url_for('static', filename=com.user.userpic) }}" alt="">
+                            {% else %}
+                                <img class="commentImage" src="/static/noimage.png" alt="">
+                            {% endif %}
+                            <div class="commentText">{{ com.user.username }}</div>
+                        </div>
                         <div class="col-lg-7 comments text-start">
-                            <input type="text" class="commentInput" data-comm-id="{{ com.comment_id }}" style="border: none; background-color: transparent; width:100%;" value="{{com.comments}}" readonly>
+                            <textarea class="commentInput" data-comm-id="{{ com.comment_id }}" style="border: none; background-color: transparent; width:100%; height: 100%;" readonly>{{com.comments}}</textarea>
                         </div>
                         <div class="col-lg-1 createTime" data-created-at="{{com.created_at}}"></div>
-                        {% if currentUserId == com.user.user_id or grade == 1 %}
+                        {% if userContext.id == com.user.user_id or userContext.grade == 1 %}
                         <div class="col-lg-2">
                             <button class="btn btn-sm btn-request">✏️</button>
                             <button class="btn btn-sm btn-request" data-comm-id="{{ com.comment_id }}">❌</button>
