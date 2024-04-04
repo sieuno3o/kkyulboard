@@ -14241,13 +14241,7 @@ body {
 }
 
 .customBody {
-    margin: 0;
-    padding: 0;
-    padding-top: 70px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    padding-top: 60px;
 }
 
 .textOrange {
