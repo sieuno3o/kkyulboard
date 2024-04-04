@@ -12,6 +12,7 @@ acc_bp = Blueprint('acc', __name__, url_prefix='/acc')
 def index():
     return render_template('acc/index.html')
 
+
 @acc_bp.route('/profile')
 def profile():
     return render_template('acc/profile.html')
@@ -40,6 +41,8 @@ def logout():
     # 이전 페이지의 URL을 세션에 저장
     session['prev_url'] = request.referrer
     logout_user()
+    if session['prev_url'] and ('board/create' in session['prev_url'] or 'profile' in session['prev_url']):
+        return redirect(url_for('acc.index'))
     return redirect(session.get('prev_url') or url_for('acc.index'))
 
 
