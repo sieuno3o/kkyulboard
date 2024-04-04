@@ -42,6 +42,7 @@ class Post(db.Model):
     user = relationship('User', back_populates='posts', lazy='joined')
     comments = relationship('Comment', back_populates='post', lazy='joined', cascade='all, delete-orphan')
     likes = relationship('Like', back_populates='post', lazy='joined', cascade='all, delete-orphan')
+    notice_mode = db.Column(db.Boolean, default=0)
 
     def __repr__(self):
         return f"[{self.user}] {self.title}"

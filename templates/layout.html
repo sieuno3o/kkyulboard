@@ -11,20 +11,76 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/board.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/comment.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/detail.css') }}">
     <style>
+        @import url(//fonts.googleapis.com/earlyaccess/notosanskr.css); 
+        .notosanskr * { 
+        font-family: 'Noto Sans KR', sans-serif;
+        }
+        @font-face { /* 제주 돌담 */
+            font-family: 'EF_jejudoldam';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2210-EF@1.0/EF_jejudoldam.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face { /* 혜민 */
+            font-family: 'IM_Hyemin-Bold';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2106@1.1/IM_Hyemin-Bold.woff2') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
 
+        *{
+            font-family: 'Noto Sans KR';
+            cursor: none;
+        }
+        .cursor {
+            position: fixed;
+            width: 32px; /* 커서 이미지의 너비 */
+            height: 32px; /* 커서 이미지의 높이 */
+            background-image: url('{{ url_for("static", filename="star.gif") }}'); /* 커서 이미지 경로 */
+            background-size: cover;
+            pointer-events: none; /* 커서를 클릭 가능하게 만들지 않음 */
+        }
+         /* 버튼 스타일 */
+        .scroll-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 20px;
+            line-height: 40px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+            display: none; /* 초기에는 숨김 상태로 설정 */
+        }
+        #scrollToTopBtn {
+            bottom: 80px;
+        }
 
+        #scrollToBottomBtn {
+            bottom: 20px;
+        }
+        .scroll-btn:hover {
+            background-color: #0057b333;
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
-
     <nav id="Nav">
         <div class="navContainer">
             <a class="navLogo" href="{{ url_for('board.index') }}">
                 <img class="navbarLogo" src="/static/kkyul.png" alt="🍊">
-                뀰보드
+                <span style="font-family: 'EF_jejudoldam'">뀰보드</span>
             </a>
             <div>
                 <a href="{{ url_for('board.index') }}" class="btn navBtn">게시판</a>
@@ -57,6 +113,9 @@
         {% endwith %}
     </div>
 
+    <button id="scrollToTopBtn" class="scroll-btn" onclick="scrollToTop()">&#8593;</button>
+    <button id="scrollToBottomBtn" class="scroll-btn" onclick="scrollToBottom()">&#8595;</button>
+    
 </body>
 
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
@@ -87,6 +146,32 @@
             alert.style.top = `calc(${newTop}% + ${index * 2}rem)`; // rem 단위로 추가 간격 조정
         });
     });
+
+    // 스크롤 이벤트 리스너 추가
+    window.addEventListener('scroll', function() {
+        var scrollToTopBtn = document.getElementById('scrollToTopBtn');
+        var scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
+        var scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
+        var scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight;
+        var clientHeight = document.documentElement.clientHeight || window.innerHeight;
+
+        if(window.scrollY == 0){
+            scrollToTopBtn.style.display = 'none';
+        }else if(scrollTop + clientHeight >= scrollHeight){
+            scrollToBottomBtn.style.display = 'none';
+        }else{
+            scrollToBottomBtn.style.display = 'block';
+            scrollToTopBtn.style.display = 'block';
+        }
+    });
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToBottom() {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
 </script>
 
 </html>

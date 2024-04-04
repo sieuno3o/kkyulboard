@@ -7,6 +7,7 @@ from flask import flash
 board_bp = Blueprint('board', __name__, url_prefix='/board')
 
 
+
 @board_bp.route('/index')
 def index():
     cate = request.args.get('cate', "", type=str)
@@ -16,17 +17,16 @@ def index():
 
     perPage = 20
 
+    notices = Post.query.filter(Post.notice_mode==True).all()
+
+    posts_query = Post.query.filter(Post.notice_mode!=True)
     if keyword:
         if cate == "title":
-            posts_query = Post.query.filter(Post.title.like(f"%{keyword}%"))
+            posts_query = posts_query.filter(Post.title.like(f"%{keyword}%"))
         elif cate == "writer":
-            posts_query = Post.query.join(User).filter(User.username == keyword)
+            posts_query = posts_query.join(User).filter(User.username == keyword)
         elif cate == "content":
-            posts_query = Post.query.filter(Post.body.like(f"%{keyword}%"))
-        else:
-            posts_query = Post.query
-    else:
-        posts_query = Post.query
+            posts_query = posts_query.filter(Post.body.like(f"%{keyword}%"))
 
     if sort == 'old':
         posts_query = posts_query.order_by(Post.created_at.asc())
@@ -43,8 +43,7 @@ def index():
     postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
 
     isLogin = current_user.is_authenticated
-    return render_template('board/index.html', pag=pag, postsCount=postsCount, keyword=keyword, cate=cate, stIdx=stIdx,
-                           sort=sort, isLogin=isLogin)
+    return render_template('board/index.html', pag=pag, notices=notices, postsCount=postsCount, keyword=keyword, cate=cate, stIdx=stIdx, sort=sort, isLogin=isLogin)
 
 
 @board_bp.route('/detail')
@@ -57,6 +56,7 @@ def detail():
         return redirect(url_for('board.index'))
 
 
+
 @board_bp.route('/detail/<post_id>')
 def render_detail(post_id):
     post = Post.query.filter_by(post_id=post_id).first()
@@ -64,8 +64,8 @@ def render_detail(post_id):
     if post.secret_mode:
         if not (post.user_id == current_user.user_id or current_user.grade):
             flash("접근 권한이 없습니다!", "info")
-            print(post.user_id, current_user.user_id)
             return redirect(request.referrer)
+
     # post_id에 해당하는 데이터가 없으면 index로 redirect
     if not post:
         flash("게시글이 존재하지 않습니다!", "info")
@@ -74,9 +74,20 @@ def render_detail(post_id):
     # click 카운트 추가
     post.click_count += 1
     db.session.commit()
+    comments = Comment.query.filter_by(post_id=post_id).order_by(Comment.created_at.asc()).all()
 
-    isLogin = current_user.is_authenticated
-    return render_template('board/detail.html', isLogin=isLogin, post=post)
+    # 로그인 사용자 정보 전달
+    # 로그인되지 않은 경우 current_user가 None이기 때문에 따로 관리 필요
+    userContext = {
+        'id': -1,
+        'grade': 0,
+    }
+    if current_user.is_authenticated:
+        userContext['id'] = current_user.user_id
+        userContext['grade'] = current_user.grade
+
+    return render_template('board/detail.html', post=post, comments=comments, comCount=len(comments),
+                           userContext=userContext)
 
 
 @board_bp.route('/create', methods=["GET", "POST"])
@@ -84,8 +95,12 @@ def createPost():
     if request.method == "POST":
         # 폼에서 입력받은 정보
         title = request.form.get("title")
-        secret = request.form.get("secretValue")
-        secret_bool = True if secret == 'true' else False
+        secret = request.form.get("secretCheck")
+        secret_bool = True if secret == 'on' else False
+        notice_bool = False
+        notice = request.form.get("noticeCheck")
+        if notice:
+            notice_bool = True if notice == 'on' else False
         problemUrl = request.form.get("problemUrl")
         body = request.form.get("body")
 
@@ -100,7 +115,7 @@ def createPost():
         like_count = 0
 
         post = Post(title=title, body=body, problem_url=problemUrl, secret_mode=secret_bool, user_id=user_id,
-                    status=status,
+                    status=status, notice_mode=notice_bool,
                     created_at=created_at, updated_at=updated_at, click_count=click_count, like_count=like_count)
         db.session.add(post)
         db.session.commit()
@@ -145,175 +160,45 @@ def editPost(post_id):
     # GET 요청시에는 수정 페이지를 렌더링
     return render_template('board/edit.html', post=post)
 
-
-@board_bp.route('/get_comments', methods=["GET"])
-def get_comments():
-    post_id = request.args.get('post_id', None, type=int)
-    if not post_id:
-        print('post_id is null')
-        return redirect(url_for('board.index'))
-
-    comments = Comment.query.filter_by(post_id=post_id)
-    currentUserId = -1
-    if current_user.is_authenticated:
-        currentUserId = current_user.user_id
-
-    return jsonify(
-        [{'comment_id': comment.comment_id,
-          'username': comment.user.username, 'comments': comment.comments,
-          'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
-          'is_login': current_user.is_authenticated, 'user_id': comment.user_id, 'current_user_id': currentUserId} for
-         comment
-         in
-         comments])
-
-
 @board_bp.route('/add_comment', methods=['POST'])
 def add_comment():
     comments = request.form.get('comments')
-    postId = request.form.get('post_id')
+    postId = request.referrer.split("/")[-1]
+    if postId != request.form.get("postId"):
+        flash("불법적인 접근은 인터넷 문화를 더럽힙니다!", "info")
+        return redirect(request.referrer)
     userId = current_user.user_id
-    if not comments or not postId:
-        print(f'comments={comments}, post id={postId}')
-        return
-
     comment = Comment(comments=comments, user_id=userId, post_id=postId,
-                      created_at=datetime.now(), updated_at=datetime.now())
-
+                    created_at=datetime.now(), updated_at=datetime.now())
     db.session.add(comment)
     db.session.commit()
-
-    return jsonify({'comment_id': comment.comment_id,
-                    'username': comment.user.username, 'comments': comment.comments,
-                    'updated_at': comment.updated_at.strftime("%Y-%m-%d %H:%M"),
-                    'is_login': current_user.is_authenticated})
+    return redirect(request.referrer)
 
 
-@board_bp.route('/delete_comment/<int:comment_id>', methods=['DELETE'])
-def delete_comment(comment_id):
+@board_bp.route('/delete_comment', methods=['POST'])
+def delete_comment():
+    data = request.json
+    comment_id = data.get("removeId")
     comment = Comment.query.filter(Comment.comment_id == comment_id).first()
     if comment:
         db.session.delete(comment)
         db.session.commit()
-
+        flash("댓글이 삭제되었습니다", "info")
     return jsonify({'message': 'Comment deleted successfully'})
 
 
 @board_bp.route('/update_comment', methods=['POST', 'GET'])
 def update_comment():
     data = request.json
-
     if not data:
         print(f'data is null')
         return jsonify({'message': 'fail to update'})
-
-    commentId = data['id']
-    content = data['content']
-
+    commentId = data['commentNo']
+    content = data['commentData']
     comment = Comment.query.filter(Comment.comment_id == commentId).first()
     if comment:
         comment.comments = content
         db.session.commit()
-
+    flash("댓글이 업데이트되었습니다", "info")
     return jsonify({'message': 'Comment deleted successfully'})
 
-
-@board_bp.route('/get_like', methods=['GET'])
-def get_like():
-    post_id = request.args.get('post_id', None, type=int)
-
-    like_img = url_for('static', filename='icon/00_like.png')
-    not_like_img = url_for('static', filename='icon/01_not_like.png')
-    is_login = current_user.is_authenticated
-    like_count = Like.query.filter_by(post_id=post_id, deleted=False).count()
-    is_like = False
-    if is_login:
-        user_id = current_user.user_id
-        like = Like.query.filter_by(user_id=user_id, post_id=post_id).first()
-        if like:
-            is_like = not like.deleted
-
-    return jsonify({'like_img': like_img, 'not_like_img': not_like_img, 'is_login': is_login, 'like_count': like_count,
-                    'is_like': is_like})
-
-
-@board_bp.route('/set_like', methods=['POST'])
-def set_like():
-    data = request.json
-
-    if not data:
-        print(f'data is null')
-        return jsonify({'message': 'fail to update'})
-
-    is_login = current_user.is_authenticated
-    if is_login == False:
-        return jsonify({'message': 'fail to update'})
-
-    user_id = current_user.user_id
-    is_like = data['is_like']
-    post_id = data['post_id']
-
-    like = Like.query.filter_by(user_id=user_id, post_id=post_id).first()
-    if like:
-        like.deleted = not is_like
-        like.updated_at = datetime.now()
-        db.session.commit()
-    else:
-        like = Like(user_id=user_id, post_id=post_id, deleted=False, created_at=datetime.now(), updated_at=datetime.now())
-        db.session.add(like)
-        db.session.commit()
-
-    like_img = url_for('static', filename='icon/00_like.png')
-    not_like_img = url_for('static', filename='icon/01_not_like.png')
-    like_count = Like.query.filter_by(post_id=post_id, deleted=False).count()
-    is_like = not like.deleted
-
-    return jsonify({'like_img': like_img, 'not_like_img': not_like_img, 'is_login': is_login, 'like_count': like_count,
-                    'is_like': is_like})
-
-
-@board_bp.route('/test_data', methods=['POST'])
-def test_data():
-    user = User.query.filter_by(username='이상일').first()
-    if not user:
-        user = User(username='이상일', password='1111',
-                    email='email2', grade='', userpic='')
-        db.session.add(user)
-        db.session.commit()
-
-    # title = '백준 16564. 히오스 프로그래머'
-    # title = '프로그래머스 42898. 등굣길'
-    # title = 'SWEA 5658. 보물상자 비밀번호'
-    title = '백준 DFS'
-    post = Post(title=title, body='body1', user_id=user.user_id, created_at=datetime.now(),
-                updated_at=datetime.now(), click_count=3)
-
-    db.session.add(post)
-    db.session.commit()
-
-    page = request.args.get('page', 1, type=int)
-    sort = request.args.get('sort', None, type=str)
-
-    perPage = 20
-
-    # 사용자의 불순한 값 대비 코드
-    try:
-        if sort == 'old':
-            pag = Post.query.order_by(Post.created_at.asc()).paginate(
-                page=page, per_page=perPage)
-        elif sort == 'recent':
-            pag = Post.query.order_by(Post.created_at.desc()).paginate(
-                page=page, per_page=perPage)
-        elif sort == 'click':
-            pag = Post.query.order_by(Post.click_count.desc()).paginate(
-                page=page, per_page=perPage)
-        else:
-            pag = Post.query.paginate(page=page, per_page=perPage)
-    except:
-        return redirect(url_for('board.index'))
-
-    stIdx = pag.total - (pag.page - 1) * pag.per_page
-    postsCount = min(pag.total, (page - 1) * perPage + len(pag.items))
-
-    isLogin = current_user.is_authenticated
-    return render_template('board/index.html', pag=pag, postsCount=postsCount, stIdx=stIdx, sort=sort, isLogin=isLogin)

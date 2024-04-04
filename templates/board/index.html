@@ -5,9 +5,9 @@
 {% endblock %}
 {% block content %}
     <div class="container">
-        {{ context }}
+        
         <div>
-            <div class="row">
+            <div class="row mt-4">
                 <div class="col align-items-center d-flex">
                     <div class="board-text-line">
                         <h2>조회 결과</h2>
@@ -18,7 +18,7 @@
                 </div>
 
                 <div class="col justify-content-end d-flex">
-                    <div class="col mb-2 mx-2 justify-content-end d-flex">
+                    <div class="col mb-2 justify-content-end d-flex">
                         <select id="sort-by-select" class="form-select form-select-color-custom form-select-size-custom"
                                 aria-label="">
                             <option value="recent" {% if sort=='recent' %}selected{% endif %}>최신순</option>
@@ -28,13 +28,9 @@
                     </div>
 
                     {% if isLogin %}
-                        <a href="{{ url_for('board.createPost') }}" class="btn btn-theme-color mb-2 mx-2">글작성</a>
+                        <a href="{{ url_for('board.createPost') }}" class="btn btn-theme-color ms-3 mb-2">글작성</a>
                     {% endif %}
-                    <a href="{{ url_for('board.index') }}" class="btn btn-primary mb-2 mx-2">검색 초기화</a>
-                    <form class="form-inline" action="{{ url_for('board.test_data') }}" method="POST">
-                        <button type="submit" class="btn btn-primary mb-2 mx-2">테스트 데이터 추가</button>
-                    </form>
-
+                    <a href="{{ url_for('board.index') }}" class="btn btn-primary mb-2 ms-3">검색 초기화</a>
                 </div>
             </div>
 
@@ -48,17 +44,29 @@
                     <th class="postHit">조회수</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="text-center">
+                {% for notice in notices %}
+                    <tr class="noticePost">
+                        <td>{% if notice.secret_mode %}📢 임원공지{% else %}📢 공지{% endif %}</td>
+                        <td style="text-align: left;">
+                            <a class="board-td-custom" href="{{ url_for('board.detail', post_id=notice.post_id)}}">{{ notice.title }}</a>
+                            {% if notice.secret_mode %}🔒{% endif %}
+                        </td>
+                        <td>{{ notice.user.username }}</td>
+                        <td>{{ notice.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                        <td>{{ notice.click_count }}</td>
+                    </tr>
+                {% endfor %}
                 {% for post in pag.items %}
                     <tr>
-                        <td style="text-align: center;">{{ stIdx - loop.index0 }}</td>
-                        <td>
+                        <td>{{ stIdx - loop.index0 }}</td>
+                        <td style="text-align: left;">
                             <a class="board-td-custom" href="{{ url_for('board.detail', post_id=post.post_id)}}">{{ post.title }}</a>
                             {% if post.secret_mode %}🔒{% endif %}
                         </td>
-                        <td style="text-align: center;">{{ post.user.username }}</td>
-                        <td style="text-align: center;">{{ post.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
-                        <td style="text-align: center;">{{ post.click_count }}</td>
+                        <td>{{ post.user.username }}</td>
+                        <td>{{ post.updated_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                        <td>{{ post.click_count }}</td>
                     </tr>
                 {% endfor %}
 
