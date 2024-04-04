@@ -4,124 +4,135 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
 {% endblock %}
 {% block content %}
-<div class="row">
-    <div class="col align-items-center d-flex">
-        <div class="board-text-line">
-            <h2>조회 결과</h2>
-            <h2 class="post-count textOrange">{{ postsCount }}</h2>
-            <h2>건</h2>
-            <h3>/ 총 {{ pag.total }}건</h3>
+
+<style scoped>
+.boardmain-index {
+    width: 80%;
+    margin: auto;
+    margin-top: 20px;
+}
+</style>
+
+<div class="boardmain-index">
+    <div class="row">
+        <div class="col align-items-center d-flex">
+            <div class="board-text-line">
+                <h2>조회 결과</h2>
+                <h2 class="post-count textOrange">{{ postsCount }}</h2>
+                <h2>건</h2>
+                <h3>/ 총 {{ pag.total }}건</h3>
+            </div>
+        </div>
+    
+        <div class="col mb-2 justify-content-end d-flex align-items-center">
+            {% if isLogin %}
+            <a href="{{ url_for('board.createPost') }}" class="btn btn-sub-color me-3">글작성</a>
+            {% endif %}
+            <a href="{{ url_for('board.index') }}" class="btn btn-theme-color me-3">전체글</a>
+            <div class="ml-2">
+                <select id="sort-by-select" class="form-select" aria-label="">
+                    <option value="recent" {% if sort=='recent' %}selected{% endif %}>최신순</option>
+                    <option value="old" {% if sort=='old' %}selected{% endif %}>오래된순</option>
+                    <option value="click" {% if sort=='click' %}selected{% endif %}>조회순</option>
+                    <option value="like" {% if sort=='like' %}selected{% endif %}>좋아요순</option>
+                </select>
+            </div>
+    
         </div>
     </div>
-
-    <div class="col mb-2 justify-content-end d-flex align-items-center">
-        {% if isLogin %}
-        <a href="{{ url_for('board.createPost') }}" class="btn btn-sub-color me-3">글작성</a>
-        {% endif %}
-        <a href="{{ url_for('board.index') }}" class="btn btn-theme-color me-3">전체글</a>
-        <div class="ml-2">
-            <select id="sort-by-select" class="form-select" aria-label="">
-                <option value="recent" {% if sort=='recent' %}selected{% endif %}>최신순</option>
-                <option value="old" {% if sort=='old' %}selected{% endif %}>오래된순</option>
-                <option value="click" {% if sort=='click' %}selected{% endif %}>조회순</option>
-                <option value="like" {% if sort=='like' %}selected{% endif %}>좋아요순</option>
-            </select>
+    
+    <table class="table postTable table-bordered">
+        <thead>
+            <tr>
+                <th class="postNum">번호</th>
+                <th class="postTitle">제목</th>
+                <th class="postWriter">작성자</th>
+                <th class="postDate">작성일</th>
+                <th class="postHit">조회수</th>
+                <th class="postLike">좋아요</th>
+            </tr>
+        </thead>
+        <tbody class="text-center">
+            {% for notice in notices %}
+            <tr class="noticePost">
+                <td class="fw-bold">{% if notice.secret_mode %}임원공지{% else %}공지{% endif %}</td>
+                <td class="fw-bold" style="text-align: left;">
+                    <a class="board-td-custom" href="{{ url_for('board.detail', post_id=notice.post_id)}}">📢 {{
+                        notice.title }} [{{ notice.comments | length }}]</a>
+                    {% if notice.secret_mode %}🔒{% endif %}
+                </td>
+                <td>{{ notice.user.username }}</td>
+                <td>{{ notice.created_at.strftime("%Y/%m/%d %H:%M") }}</td>
+                <td>{{ notice.click_count }}</td>
+                <td>{{ notice.likes | length }}</td>
+            </tr>
+            {% endfor %}
+            {% for post in pag.items %}
+            <tr>
+                <td>{{ stIdx - loop.index0 }}</td>
+                <td style="text-align: left;">
+                    <a class="board-td-custom" href="{{ url_for('board.detail', post_id=post.post_id)}}">{{
+                        post.title }} [{{ post.comments | length }}]</a>
+                    {% if post.secret_mode %}🔒{% endif %}
+                </td>
+                <td>{{ post.user.username }}</td>
+                <td>{{ post.created_at.strftime("%Y/%m/%d %H:%M") }}
+                </td>
+                <td>{{ post.click_count }}</td>
+                <td>{{ post.likes | length }}</td>
+            </tr>
+            {% endfor %}
+    
+        </tbody>
+    </table>
+    
+    <form>
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <select name="cate" class="form-select" aria-label="" style="width: 120px">
+                    <option value="title" {% if cate=='title' %}selected{% endif %}>제목</option>
+                    <option value="writer" {% if cate=='writer' %}selected{% endif %}>작성자</option>
+                    <option value="content" {% if cate=='content' %}selected{% endif %}>내용</option>
+                </select>
+            </div>
+            <div class="col">
+                <input type="text" name="keyword" value="{{keyword}}" class="form-control w-100">
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-theme-color" style="padding-left: 28px; padding-right: 28px;">검색</button>
+            </div>
         </div>
-
-    </div>
-</div>
-
-<table class="table postTable table-bordered">
-    <thead>
-        <tr>
-            <th class="postNum">번호</th>
-            <th class="postTitle">제목</th>
-            <th class="postWriter">작성자</th>
-            <th class="postDate">작성일</th>
-            <th class="postHit">조회수</th>
-            <th class="postLike">좋아요</th>
-        </tr>
-    </thead>
-    <tbody class="text-center">
-        {% for notice in notices %}
-        <tr class="noticePost">
-            <td class="fw-bold">{% if notice.secret_mode %}임원공지{% else %}공지{% endif %}</td>
-            <td class="fw-bold" style="text-align: left;">
-                <a class="board-td-custom" href="{{ url_for('board.detail', post_id=notice.post_id)}}">📢 {{
-                    notice.title }} [{{ notice.comments | length }}]</a>
-                {% if notice.secret_mode %}🔒{% endif %}
-            </td>
-            <td>{{ notice.user.username }}</td>
-            <td>{{ notice.created_at.strftime("%Y/%m/%d %H:%M") }}</td>
-            <td>{{ notice.click_count }}</td>
-            <td>{{ notice.likes | length }}</td>
-        </tr>
-        {% endfor %}
-        {% for post in pag.items %}
-        <tr>
-            <td>{{ stIdx - loop.index0 }}</td>
-            <td style="text-align: left;">
-                <a class="board-td-custom" href="{{ url_for('board.detail', post_id=post.post_id)}}">{{
-                    post.title }} [{{ post.comments | length }}]</a>
-                {% if post.secret_mode %}🔒{% endif %}
-            </td>
-            <td>{{ post.user.username }}</td>
-            <td>{{ post.created_at.strftime("%Y/%m/%d %H:%M") }}
-            </td>
-            <td>{{ post.click_count }}</td>
-            <td>{{ post.likes | length }}</td>
-        </tr>
-        {% endfor %}
-
-    </tbody>
-</table>
-
-<form>
-    <div class="row justify-content-center">
-        <div class="col-auto">
-            <select name="cate" class="form-select" aria-label="" style="width: 120px">
-                <option value="title" {% if cate=='title' %}selected{% endif %}>제목</option>
-                <option value="writer" {% if cate=='writer' %}selected{% endif %}>작성자</option>
-                <option value="content" {% if cate=='content' %}selected{% endif %}>내용</option>
-            </select>
+    </form>
+    
+    
+    <div class="page-nav mt-4">
+        <div class="col justify-content-center d-flex align-items-center">
+            <!-- Pagination Links -->
+            {% if pag.has_prev %}
+            <a class="page-nav-item"
+                href="{{ url_for('board.index', page=pag.prev_num, sort=sort, cate=cate, keyword=keyword) }}">
+            </a>
+            {% endif %}
+    
+            {% for page_num in pag.iter_pages() %}
+            {% if page_num %}
+            {% if page_num != pag.page %}
+            <a class="page-nav-item"
+                href="{{ url_for('board.index', page=page_num, sort=sort, cate=cate, keyword=keyword) }}">{{
+                page_num }}</a>
+            {% else %}
+            <a class="page-nav-item-current">{{ page_num }}</a>
+            {% endif %}
+            {% else %}
+            ...
+            {% endif %}
+            {% endfor %}
+    
+            {% if pag.has_next %}
+            <a class="page-nav-item"
+                href="{{ url_for('board.index', page=pag.next_num, sort=sort, cate=cate, keyword=keyword) }}">></a>
+            {% endif %}
         </div>
-        <div class="col">
-            <input type="text" name="keyword" value="{{keyword}}" class="form-control w-100">
-        </div>
-        <div class="col-auto">
-            <button class="btn btn-theme-color" style="padding-left: 28px; padding-right: 28px;">검색</button>
-        </div>
-    </div>
-</form>
-
-
-<div class="page-nav mt-4">
-    <div class="col justify-content-center d-flex align-items-center">
-        <!-- Pagination Links -->
-        {% if pag.has_prev %}
-        <a class="page-nav-item"
-            href="{{ url_for('board.index', page=pag.prev_num, sort=sort, cate=cate, keyword=keyword) }}">
-        </a>
-        {% endif %}
-
-        {% for page_num in pag.iter_pages() %}
-        {% if page_num %}
-        {% if page_num != pag.page %}
-        <a class="page-nav-item"
-            href="{{ url_for('board.index', page=page_num, sort=sort, cate=cate, keyword=keyword) }}">{{
-            page_num }}</a>
-        {% else %}
-        <a class="page-nav-item-current">{{ page_num }}</a>
-        {% endif %}
-        {% else %}
-        ...
-        {% endif %}
-        {% endfor %}
-
-        {% if pag.has_next %}
-        <a class="page-nav-item"
-            href="{{ url_for('board.index', page=pag.next_num, sort=sort, cate=cate, keyword=keyword) }}">></a>
-        {% endif %}
     </div>
 </div>
 
