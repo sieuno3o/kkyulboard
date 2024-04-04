@@ -14228,11 +14228,8 @@ a.button3 {
     position: relative;
 }
 
-<<<<<<< HEAD
-.boardTitle > p{
-=======
+
 .boardTitle>p {
->>>>>>> main
     position: absolute;
     bottom: 0;
     right: 0;
