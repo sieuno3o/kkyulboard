@@ -275,3 +275,25 @@ def set_like():
         db.session.commit()
 
     return jsonify({'message': 'Like set successfully'})
+
+
+@board_bp.route('/prev_post', methods=["POST"])
+def prev_post():
+    postId = int(request.referrer.split("/")[-1])
+    previousPost = Post.query.filter(Post.post_id < postId).order_by(Post.post_id.desc()).first()
+
+    if not previousPost:
+        return redirect(request.referrer)
+
+    return redirect(url_for('board.detail', post_id=previousPost.post_id))
+
+
+@board_bp.route('/next_post', methods=["POST"])
+def next_post():
+    postId = int(request.referrer.split("/")[-1])
+    nextPost = Post.query.filter(Post.post_id > postId).order_by(Post.post_id.asc()).first()
+
+    if not nextPost:
+        return redirect(request.referrer)
+
+    return redirect(url_for('board.detail', post_id=nextPost.post_id))
