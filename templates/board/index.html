@@ -5,9 +5,9 @@
 {% endblock %}
 {% block content %}
     <div class="container">
-        {{ context }}
+        
         <div>
-            <div class="row">
+            <div class="row mt-4">
                 <div class="col align-items-center d-flex">
                     <div class="board-text-line">
                         <h2>조회 결과</h2>
@@ -18,7 +18,7 @@
                 </div>
 
                 <div class="col justify-content-end d-flex">
-                    <div class="col mb-2 mx-2 justify-content-end d-flex">
+                    <div class="col mb-2 justify-content-end d-flex">
                         <select id="sort-by-select" class="form-select form-select-color-custom form-select-size-custom"
                                 aria-label="">
                             <option value="recent" {% if sort=='recent' %}selected{% endif %}>최신순</option>
@@ -28,9 +28,9 @@
                     </div>
 
                     {% if isLogin %}
-                        <a href="{{ url_for('board.createPost') }}" class="btn btn-theme-color mb-2 mx-2">글작성</a>
+                        <a href="{{ url_for('board.createPost') }}" class="btn btn-theme-color ms-3 mb-2">글작성</a>
                     {% endif %}
-                    <a href="{{ url_for('board.index') }}" class="btn btn-primary mb-2 mx-2">검색 초기화</a>
+                    <a href="{{ url_for('board.index') }}" class="btn btn-primary mb-2 ms-3">검색 초기화</a>
                 </div>
             </div>
 
