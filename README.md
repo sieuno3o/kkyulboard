@@ -1,7 +1,8 @@
 # 🍊 KKYULBOARD 🍊
-
+<img src="https://media.discordapp.net/attachments/812018301612851290/1225691005450194944/image.png?ex=66220cb3&is=660f97b3&hm=e02c6d80bea9d98ec04ff6854ad66a7ec97938211de4e9da2a378ab37b177e56&=&format=webp&quality=lossless&width=1100&height=490">
 SPARTA와 고용노동부에서 진행하는 내일배움캠프의 AI 6기 팀 뀰이 제작한 게시판입니다. 간편하게 자신의 알고리즘 코드를 올리고 서로의 생각을 공유할 수 있는 게시판 사이트를 제작 했습니다.
 
+<br>
 <br>
 
 ## 목차
