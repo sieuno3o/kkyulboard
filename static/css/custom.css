@@ -14087,7 +14087,7 @@ input[type="checkbox"]:checked+label::after {
 .customBody {
     margin-top: 70.39px;
     padding: 28px;
-    max-height: calc(100vh - 70.38px);
+    /* max-height: calc(100vh - 70.38px); */
     /* 뷰포트 높이에서 네비게이션 바의 높이를 뺀 값 */
     overflow-y: auto;
     /* 세로 스크롤만 허용 */
@@ -14407,7 +14407,7 @@ body {
     font-size: 14px;
 }
 
-@import url("https://fonts.googleapis.com/earlyaccess/notosanskr.css");
+/* @import url("https://fonts.googleapis.com/earlyaccess/notosanskr.css"); */
 
 .notosanskr * {
     font-family: 'Noto Sans KR', sans-serif;
@@ -14444,7 +14444,7 @@ footer {
     background: rgba(94, 180, 117, 0.1);
 }
 
-@import url('https://fonts.googleapis.com/earlyaccess/notosanskr.css');
+/* @import url('https://fonts.googleapis.com/earlyaccess/notosanskr.css'); */
 
 .notosanskr * {
     font-family: 'Noto Sans KR', sans-serif;

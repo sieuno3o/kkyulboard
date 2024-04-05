@@ -5,8 +5,9 @@
     {% block head %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
     {% endblock %}
+    <title>뀰보드</title>
+    <link rel="icon" href="{{ url_for('static', filename='kkyul.png') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/board.css') }}">
@@ -97,14 +98,22 @@
                 <span style="font-family: 'EF_jejudoldam'">뀰보드</span>
             </a>
             <div>
-                <a href="{{ url_for('board.index') }}" class="btn navBtn">게시판</a>
+                <a href="{{ url_for('board.index') }}" style="height: 50px;" class="btn navBtn">게시판</a>
                 <!-- logined user -->
                 {% if current_user.is_authenticated %}
-                <a href="{{ url_for('acc.profile') }}" class="btn navBtn">내정보</a>
-                <a href="{{ url_for('acc.logout') }}" class="btn navBtn">로그아웃</a>
+                <a href="{{ url_for('acc.logout') }}" style="height: 50px;" class="btn navBtn">로그아웃</a>
+                <a href="{{ url_for('acc.profile') }}" style="height: 50px;" class="btn navBtn">
+                    {{ current_user.username }}
+                    {% if current_user.userpic %} 
+                        <img class="commentImage" style="margin-left:8px;" src="{{ url_for('static', filename=current_user.userpic )}}">
+                    {% else %} 
+                        <img class="commentImage" style="margin-left:8px;" src="{{ url_for('static', filename='noimage.png' )}}">
+                    {% endif %}
+                </a>
+                
                 <!-- anonymous user -->
                 {% else %}
-                <a href="{{ url_for('acc.login') }}" class="btn navBtn">로그인</a>
+                <a href="{{ url_for('acc.login') }}" style="height: 50px;" class="btn navBtn">로그인</a>
                 {% endif %}
             </div>
         </div>
@@ -126,12 +135,14 @@
             {% endwith %}
         </div>
 
-        <div>
-            <button id="scrollToTopBtn" class="scroll-btn" onclick="scrollToTop()"
-                style="background-color: rgba(250, 193, 126, 0.9)">&#8593;</button>
-            <button id="scrollToBottomBtn" class="scroll-btn" onclick="scrollToBottom()"
-                style="background-color: rgba(250, 193, 126, 0.9)">&#8595;</button>
-        </div>
+        {% if 'board' in request.path %}
+            <div>
+                <button id="scrollToTopBtn" class="scroll-btn" onclick="scrollToTop()"
+                    style="background-color: rgba(250, 193, 126, 0.9)">&#8593;</button>
+                <button id="scrollToBottomBtn" class="scroll-btn" onclick="scrollToBottom()"
+                    style="background-color: rgba(250, 193, 126, 0.9)">&#8595;</button>
+            </div>
+        {% endif %}
 
     </div>
 
@@ -206,9 +217,7 @@
     function scrollToBottom() {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
-</script>
 
-<script>
     // 목표 날짜 설정 (YYYY, MM (0-11), DD)
     // 자바스크립트는 월을 0부터 시작으로 계산하므로 6월은 5로 설정
     const countDownDate = new Date("2024-06-21T00:00:00+09:00").getTime(); // 서울 시간 기준

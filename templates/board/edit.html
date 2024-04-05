@@ -55,11 +55,11 @@
             </div>
 
             {% if current_user.grade == 1 %}
-            <div class="horizontal margin_right">
-                <input type="checkbox" name="noticeCheck" id="check2" {% if post.notice_mode %}checked{% endif %}>
-                <label for="check2" class="marginRight8 marginLeft16"></label>
-                공지글
-            </div>
+                <div class="horizontal margin_right">
+                    <input type="checkbox" name="noticeCheck" id="check2" {% if post.notice_mode %}checked{% endif %}>
+                    <label for="check2" class="marginRight8 marginLeft16"></label>
+                    공지글
+                </div>
             {% endif %}
 
             <button type="submit" class="check-button marginRight8 buttonGreen" title="수정완료"

@@ -42,7 +42,7 @@ class Post(db.Model):
     user = relationship('User', back_populates='posts', lazy='joined')
     comments = relationship('Comment', back_populates='post', lazy='joined', cascade='all, delete-orphan')
     likes = relationship('Like', primaryjoin="and_(Post.post_id==Like.post_id, Like.deleted==False)",
-                         back_populates='post', lazy='joined', cascade='all, delete-orphan')
+                        back_populates='post', lazy='joined', cascade='all, delete-orphan')
     notice_mode = db.Column(db.Boolean, default=0)
 
     def __repr__(self):

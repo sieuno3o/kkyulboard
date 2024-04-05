@@ -93,10 +93,11 @@
             </div>
             <div>
                 {% if current_user.grade == 1 or current_user == post.user %}
-                <a href="{{ url_for('board.editPost', post_id=post.post_id )}}"><button
-                        class="buttonGreen edit-button">수정</button></a>
-                <a href="{{ url_for('board.deletePost', post_id=post.post_id )}}"><button
-                        class="buttonDanger remove-button">삭제</button></a>
+                    {% if current_user == post.user %}
+                        <a href="{{ url_for('board.editPost', post_id=post.post_id )}}"><button
+                                class="buttonGreen edit-button">수정</button></a>
+                    {% endif %}
+                    <button class="buttonDanger remove-button" onclick="removePost()">삭제</button></a>
                 {% endif %}
             </div>
         </div>
@@ -122,7 +123,9 @@
         </div>
         {% if userContext.id == com.user.user_id or userContext.grade == 1 %}
         <div class="col-2" style="display: flex; align-items: center;">
-            <button class="btn buttonGreen2 btn-request">수정</button>
+            {% if userContext.id == com.user.user_id %}
+                <button class="btn buttonGreen2 btn-request">수정</button>
+            {% endif %}
             <button class="btn buttonDanger2 btn-request margin_left_4" data-comm-id="{{ com.comment_id }}">삭제</button>
         </div>
         {% endif %}
@@ -159,31 +162,6 @@
     </div>
 
 <script>
-    function showTwoButton() {
-        addButton = document.querySelector('.add-button');
-        editButton = document.querySelector('.edit-button');
-        removeButton = document.querySelector('.remove-button');
-        if (addButton.innerHTML == "+") {
-            addButton.innerHTML = "-";
-            addButton.style.opacity = 0.5;
-            editButton.style.display = "block";
-            removeButton.style.display = "block";
-        } else {
-            addButton.innerHTML = "+";
-            addButton.style.opacity = 1;
-            editButton.style.display = "none";
-            removeButton.style.display = "none";
-        }
-    }
-
-    function editItem() {
-        // 수정 기능 구현
-    }
-
-    function deleteItem() {
-        // 삭제 기능 구현
-    }
-
     document.addEventListener('DOMContentLoaded', function () {
         const markdownView = document.querySelector('.markdownView');
         const markdownContent = markdownView.textContent;
@@ -312,6 +290,31 @@
             }
         });
     });
+
+    function removePost() {
+        if (confirm("정말로 삭제하시겠습니까?")) {
+            fetch("/board/deletePost/{{post.post_id}}", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+            }).then(response => {
+                // JSON 데이터를 파싱하여 반환
+                return response.json();
+            }).then(data => {
+                // 응답 데이터를 사용하여 처리
+                if (data.result) {
+                    console.log("삭제가 완료되었습니다.");
+                    // 특정 페이지로 이동
+                    window.location.href = "{{url_for('board.index')}}";
+                } else {
+                    console.log("삭제에 실패하였습니다.");
+                }
+            }).catch(error => {
+                console.error('데이터를 불러오는 중 오류 발생:', error);
+            })
+        }
+    }
 
     // Enter 키를 눌렀을 때 실행되는 함수
     function handleEnterKey(event) {

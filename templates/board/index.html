@@ -11,7 +11,12 @@
     margin: auto;
     margin-top: 20px;
 }
+.page-nav-item:hover{
+    opacity: 0.5;
+    color: #FFA93F;
+}
 </style>
+
 
 <div class="boardmain-index">
     <div class="row">
@@ -62,7 +67,7 @@
                     {% if notice.secret_mode %}🔒{% endif %}
                 </td>
                 <td>{{ notice.user.username }}</td>
-                <td>{{ notice.created_at.strftime("%Y/%m/%d %H:%M") }}</td>
+                <td>{{ notice.created_at.strftime("%Y/%m/%d") }}</td>
                 <td>{{ notice.click_count }}</td>
                 <td>{{ notice.likes | length }}</td>
             </tr>
@@ -76,7 +81,7 @@
                     {% if post.secret_mode %}🔒{% endif %}
                 </td>
                 <td>{{ post.user.username }}</td>
-                <td>{{ post.created_at.strftime("%Y/%m/%d %H:%M") }}
+                <td>{{ post.created_at.strftime("%Y/%m/%d") }}
                 </td>
                 <td>{{ post.click_count }}</td>
                 <td>{{ post.likes | length }}</td>
@@ -110,7 +115,7 @@
             <!-- Pagination Links -->
             {% if pag.has_prev %}
             <a class="page-nav-item"
-                href="{{ url_for('board.index', page=pag.prev_num, sort=sort, cate=cate, keyword=keyword) }}">
+                href="{{ url_for('board.index', page=pag.prev_num, sort=sort, cate=cate, keyword=keyword) }}"><
             </a>
             {% endif %}
     

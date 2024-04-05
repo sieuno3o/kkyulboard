@@ -13,7 +13,8 @@
     <div class="vertical">
         <form method="post" class="vertical">
             <input type="text" name="userid" placeholder="ID" class="customInput">
-            <input type="password" name="userpw" placeholder="Password" class="customInput">
+            <input type="password" name="userpw" oninput="convertToEnglish()" onkeypress="checkCapsLock(event)" placeholder="Password" class="customInput">
+            <div id="capsLockNotification" style="display:none; color:red;">Caps Lock이 켜져 있습니다!</div>
             <button class="button2 marginTop16">로그인</button>
         </form>
         <div id="loginBottomArea">
@@ -21,5 +22,27 @@
         </div>
     </div>
 </div>
+<script>
+    function convertToEnglish() {
+        var input = document.getElementById("userpw");
+        var convertedText = input.value.replace(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g, function(char) {
+            return String.fromCharCode(char.charCodeAt(0) - 0xAC00 + 44032);
+        });
+        input.value = convertedText;
+    }
 
+    function checkCapsLock(event) {
+        var capsLockNotification = document.getElementById("capsLockNotification");
+        var charCode = event.keyCode ? event.keyCode : event.which;
+        var shiftKey = event.shiftKey ? event.shiftKey : (charCode === 16 ? true : false);
+
+        if (shiftKey) {
+            capsLockNotification.style.display = "none";
+        } else {
+            capsLockNotification.style.display = (event.getModifierState && event.getModifierState('CapsLock')) ? "block" : "none";
+        }
+    }
+    
+
+</script>
 {% endblock %}

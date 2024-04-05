@@ -16,7 +16,7 @@ def index():
     page = request.args.get('page', 1, type=int)
     sort = request.args.get('sort', 'recent', type=str)
 
-    perPage = 20
+    perPage = 10
 
     notices = Post.query.filter(Post.notice_mode == True).all()
 
@@ -113,7 +113,7 @@ def detail(post_id=None):
     print(likeContext)
 
     return render_template('board/detail.html', post=post, comments=comments, comCount=len(comments),
-                           userContext=userContext, likeContext=likeContext)
+                        userContext=userContext, likeContext=likeContext)
 
 
 @board_bp.route('/create', methods=["GET", "POST"])
@@ -149,22 +149,22 @@ def createPost():
     return render_template('board/create.html')
 
 
-@board_bp.route('/delete/<int:post_id>')
+@board_bp.route('/deletePost/<int:post_id>')
 def deletePost(post_id):
     post = Post.query.filter_by(post_id=post_id).first()
 
     if not post:
         flash("해당 게시글을 찾을 수 없습니다.", 'danger')
-        return redirect(url_for('board.index'))
+        return jsonify({'result':False})
 
-    if post.user != current_user:
+    if post.user != current_user and current_user != 1:
         flash("삭제 권한이 없습니다.", 'danger')
-        return redirect(url_for('board.index'))
+        return jsonify({'result':False})
 
     db.session.delete(post)
     db.session.commit()
     flash("게시글이 삭제되었습니다.", "success")
-    return redirect(url_for('board.index'))
+    return jsonify({'result':True})
 
 
 @board_bp.route('/edit/<int:post_id>', methods=["GET", "POST"])
@@ -183,7 +183,8 @@ def editPost(post_id):
     if request.method == "POST":
         # 폼에서 수정된 내용 가져오기
         title = request.form.get("title")
-        secret = request.form.get("secretValue") == 'true'
+        secret = request.form.get("secretCheck") == 'on'
+        notice = request.form.get("noticeCheck") == 'on'
         problemUrl = request.form.get("problemUrl")
         body = request.form.get("body")
 
@@ -192,6 +193,7 @@ def editPost(post_id):
         post.secret_mode = secret
         post.problem_url = problemUrl
         post.body = body
+        post.notice_mode = notice
         post.updated_at = datetime.now()
         db.session.commit()
 
@@ -211,7 +213,7 @@ def add_comment():
         return redirect(request.referrer)
     userId = current_user.user_id
     comment = Comment(comments=comments, user_id=userId, post_id=postId,
-                      created_at=datetime.now(), updated_at=datetime.now())
+                    created_at=datetime.now(), updated_at=datetime.now())
     db.session.add(comment)
     db.session.commit()
     return redirect(request.referrer)

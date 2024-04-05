@@ -1,5 +1,5 @@
 from flask import Flask
-from .database import db, User, Post, Comment
+from .database import db, User, Post, Comment, Like
 from .acc.routes import acc_bp
 from .board.routes import board_bp
 from .utils import read_from_json
@@ -22,10 +22,14 @@ def create_app():
     
     class CommentAdmin(ModelView):
         column_list = Comment.__table__.columns.keys() + ["user", "post"]
+
+    class LikeAdmin(ModelView):
+        column_list = Like.__table__.columns.keys() + ["user", "post"]
     
     admin.add_view(UserAdmin(User, db.session))
     admin.add_view(PostAdmin(Post, db.session))
     admin.add_view(CommentAdmin(Comment, db.session))
+    admin.add_view(LikeAdmin(Like, db.session))
 
     app.secret_key = read_from_json('secret.json')["SECRETKEY"]
 
